@@ -11,7 +11,7 @@ A student design prototype for **Common Ground**, a 2035 future-community concep
 ## Privacy and what is counted
 
 - Everything a person types stays in their browser. Nothing is saved or sent.
-- The page counts **anonymous events only** (for example "reached step 3", "made a plan", "pressed Print", and answers to four optional fixed-choice feedback questions) using [GoatCounter](https://www.goatcounter.com/), which uses no cookies and keeps no IP addresses.
+- The page counts **anonymous events only** (for example "reached step 3", "made a plan", "pressed Print", and answers to four optional fixed-choice feedback questions) using [GoatCounter](https://www.goatcounter.com/), which uses no cookies and keeps no IP addresses. GoatCounter also records the country, browser and device type, and time of each count.
 - Age, sex, height, weight, health answers and plans are **never** sent.
 - Nothing is counted if the browser sends Do Not Track or Global Privacy Control, and visitors can switch counting off on the page.
 - A Content-Security-Policy in the page blocks requests to any other site.
