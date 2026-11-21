@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-size="m">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Common Ground food and movement planner: a student design prototype for people aged 60 and over.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; font-src data:; img-src data: https://*.goatcounter.com; connect-src https://*.goatcounter.com; base-uri 'none'; form-action 'none'">
+<title>Common Ground | Food &amp; Movement Planner</title>
+<style>
+/* Typeface: Atkinson Hyperlegible Next (SIL Open Font License 1.1), embedded so the page makes no outside requests.
+   Designed by the Braille Institute for readers with low vision. */
+@font-face{font-family:"AHN";font-weight:400;font-style:normal;font-display:swap;src:url(data:font/woff2;base64,/*FONT400*/) format("woff2")}
+@font-face{font-family:"AHN";font-weight:700;font-style:normal;font-display:swap;src:url(data:font/woff2;base64,/*FONT700*/) format("woff2")}
+@font-face{font-family:"AHN";font-weight:800;font-style:normal;font-display:swap;src:url(data:font/woff2;base64,/*FONT800*/) format("woff2")}
+
+/* ===== Tokens =====
+   Signage system: deep "sign green" panels carry headings and day names, the way park and station signs do.
+   Light, cool page (not cream) to limit glare; colour choices rely on brightness contrast, because
+   blue–yellow discrimination often weakens with age. Yellow is kept for one job: showing what is selected or focused. */
+:root{
+  --page:#ECEFEB; --surface:#FFFFFF; --ink:#212121; --muted:#4A4E4B; --line:#B9C0B9;
+  --sign:#14513A; --sign-deep:#0D3B2A; --sign-tint:#DCE8E1;
+  --select:#FFF0B3; --focus:#FFD23F;
+  --plum:#6A2C5A; --plum-tint:#F1E4EE; --navy:#1F3F6B; --navy-tint:#E4EBF5;
+  --urgent:#A4231B; --urgent-tint:#FCE8E6; --amber:#7A5600; --amber-tint:#FFF5D6;
+  --font:"AHN",Verdana,"Segoe UI",system-ui,sans-serif;
+  --r-sign:10px; --r-ctrl:6px;
+  --measure:40rem;
+}
+html{font-size:100%;-webkit-text-size-adjust:100%}
+html[data-size="l"]{font-size:115%}
+html[data-size="xl"]{font-size:130%}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--font);font-size:1.25rem;line-height:1.55;font-variant-numeric:tabular-nums}
+h1,h2,h3{font-weight:800;line-height:1.15;margin:0 0 .6rem;letter-spacing:-.005em}
+h1{font-size:clamp(2rem,5.2vw,2.75rem)}
+h2{font-size:clamp(1.6rem,3.6vw,2rem)}
+h3{font-size:1.4rem}
+p{margin:0 0 1rem}
+a{color:var(--navy);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
+a:hover{text-decoration-thickness:4px}
+strong{font-weight:700}
+:focus{outline:none}
+:focus-visible{outline:4px solid var(--ink);outline-offset:3px;box-shadow:0 0 0 3px var(--focus)}
+a:focus-visible,.textlink:focus-visible{outline:none;box-shadow:none;background:var(--focus);color:var(--ink);text-decoration:none;box-shadow:0 -2px var(--focus),0 4px var(--ink)}
+[tabindex="-1"]:focus{outline:none;box-shadow:none}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+[hidden]{display:none!important}
+.skip{position:absolute;left:1rem;top:-200px;background:var(--focus);color:var(--ink);padding:.7rem 1.1rem;font-weight:700;z-index:20}
+.skip:focus{top:.6rem}
+.wrap{max-width:68rem;margin:0 auto;padding:0 1.25rem}
+.narrow{max-width:var(--measure)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:auto}}
+
+/* ===== Header ===== */
+.masthead{background:var(--surface);border-bottom:2px solid var(--ink)}
+.masthead .wrap{display:flex;justify-content:space-between;align-items:center;gap:1rem 2rem;flex-wrap:wrap;padding-top:.85rem;padding-bottom:.85rem}
+.wordmark{font-weight:800;font-size:1.5rem;color:var(--sign);text-decoration:none;line-height:1.1}
+.wordmark span{display:block;font-weight:400;font-size:1.05rem;color:var(--ink)}
+.textsize{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.textsize p{margin:0;font-weight:700;font-size:1.1rem}
+.textsize button{font:inherit;font-size:1.05rem;font-weight:700;min-height:3rem;padding:.3rem .9rem;border:2px solid var(--ink);background:var(--surface);color:var(--ink);border-radius:var(--r-ctrl);cursor:pointer}
+.textsize button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.textsize button:focus-visible{background:var(--focus);color:var(--ink)}
+.notebar{border-bottom:1px solid var(--line);font-size:1.05rem}
+.notebar .wrap{padding-top:.6rem;padding-bottom:.6rem}
+
+/* ===== The sign panel (signature element) ===== */
+.sign{background:var(--sign);color:#fff;border-radius:var(--r-sign);padding:1.6rem 1.8rem 1.8rem;position:relative}
+.sign h1,.sign h2{color:#fff;margin:0}
+.sign .sign-meta{font-size:1.15rem;margin:0 0 .5rem;font-weight:700;color:#D5E6DC}
+.sign-hero h1{font-size:clamp(2.4rem,7vw,4.2rem);line-height:1.02;letter-spacing:-.02em;max-width:14ch}
+.sign-hero p{font-size:1.3rem;max-width:34ch;margin:1rem 0 0;color:#fff}
+
+/* ===== Buttons ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.6rem;font:inherit;font-weight:700;font-size:1.25rem;line-height:1.2;min-height:3.6rem;padding:.75rem 1.5rem;border-radius:var(--r-ctrl);border:3px solid var(--sign-deep);background:var(--sign);color:#fff;cursor:pointer;text-decoration:none;box-shadow:0 3px 0 var(--sign-deep)}
+.btn:hover{background:var(--sign-deep)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--sign-deep)}
+.btn:focus-visible{background:var(--focus);color:var(--ink);border-color:var(--ink);box-shadow:0 3px 0 var(--ink);outline:none}
+.btn.secondary{background:var(--surface);color:var(--ink);border-color:var(--ink);box-shadow:0 3px 0 var(--ink)}
+.btn.secondary:hover{background:#F3F5F2}
+.btn.quiet{background:var(--surface);color:var(--ink);border:2px solid var(--ink);box-shadow:none;min-height:3rem;font-size:1.1rem;padding:.45rem 1rem}
+.btn.quiet:hover{background:#F3F5F2}
+.btn.warn{background:var(--urgent);border-color:#6E150F;box-shadow:0 3px 0 #6E150F}
+.btn-row{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-top:1.8rem}
+.textlink{background:none;border:0;padding:0;font:inherit;color:var(--navy);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em;cursor:pointer}
+.back{display:inline-flex;align-items:center;gap:.5rem;font-size:1.2rem;font-weight:700;margin:1.4rem 0 1rem;min-height:2.75rem;color:var(--ink)}
+.back::before{content:"";width:.6rem;height:.6rem;border-left:3px solid currentColor;border-bottom:3px solid currentColor;transform:rotate(45deg);margin-right:.1rem}
+
+/* ===== Steps ===== */
+main{padding-bottom:3.5rem}
+.stepview{padding-top:.4rem;max-width:46rem}
+.choices.opts{grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr))}
+.progress{margin:0 0 1rem}
+.progress p{margin:0 0 .45rem;font-weight:700;font-size:1.15rem}
+.progress ol{list-style:none;display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:0;padding:0}
+.progress li{height:10px;border-radius:3px;background:#CDD4CD}
+.progress li.done{background:var(--sign)}
+.progress li.now{background:var(--ink)}
+.stepbody{background:var(--surface);border-radius:0 0 var(--r-sign) var(--r-sign);padding:1.8rem 1.8rem 2rem;border:2px solid var(--sign);border-top:0}
+.sign.step-sign{border-radius:var(--r-sign) var(--r-sign) 0 0}
+.lead{font-size:1.25rem;max-width:var(--measure)}
+.q{margin:0 0 2rem;padding:0;border:0;min-width:0}
+.q:last-child{margin-bottom:0}
+.q legend,.q .qlabel{display:block;font-weight:800;font-size:1.45rem;line-height:1.25;margin:0 0 .4rem;padding:0;max-width:var(--measure)}
+.hint{color:var(--muted);font-size:1.15rem;margin:0 0 .9rem;max-width:var(--measure)}
+.err{color:var(--urgent);font-weight:700;margin:0 0 .7rem}
+.err:empty{display:none}
+.q.has-error{border-left:6px solid var(--urgent);padding-left:1.1rem}
+input[type=text]{font:inherit;font-size:1.6rem;font-weight:700;padding:.4rem .7rem;min-height:3.8rem;border:3px solid var(--ink);border-radius:var(--r-ctrl);background:#fff;color:var(--ink)}
+input[type=text]:focus{outline:4px solid var(--focus);outline-offset:0;box-shadow:none}
+.has-error input[type=text]{border-color:var(--urgent)}
+input.w-age{width:7rem} input.w-3{width:8rem} input.w-2{width:6rem}
+.units-row{display:flex;flex-wrap:wrap;gap:1.2rem 1.6rem;align-items:flex-end}
+.units-row label{display:flex;flex-direction:column;gap:.3rem;font-weight:700;font-size:1.15rem}
+.units-row .suffix{display:flex;align-items:center;gap:.5rem;font-size:1.3rem;font-weight:700}
+
+/* Choice rows: big targets, unmistakable selected state */
+.choices{display:grid;gap:.75rem;max-width:var(--measure)}
+.choices.two{grid-template-columns:repeat(auto-fit,minmax(12rem,1fr))}
+.choice{display:flex;gap:1rem;align-items:center;padding:.9rem 1.1rem;min-height:4rem;border:2px solid var(--ink);border-radius:var(--r-ctrl);background:#fff;cursor:pointer;line-height:1.3}
+.choice:hover{background:#F6F8F5}
+.choice:has(input:checked){background:var(--select);border-width:3px;padding:calc(.9rem - 1px) calc(1.1rem - 1px)}
+.choice:has(input:focus-visible){outline:4px solid var(--ink);outline-offset:3px;box-shadow:0 0 0 3px var(--focus)}
+.choice b{display:block;font-size:1.25rem}
+.choice small{display:block;font-size:1.1rem;color:var(--muted);margin-top:.15rem}
+.choice input{appearance:none;-webkit-appearance:none;flex:none;width:2rem;height:2rem;margin:0;border:3px solid var(--ink);background:#fff;cursor:pointer;display:grid;place-items:center}
+.choice input:focus-visible{outline:none;box-shadow:none}
+.choice input[type=radio]{border-radius:50%}
+.choice input[type=radio]:checked::after{content:"";width:1rem;height:1rem;border-radius:50%;background:var(--ink)}
+.choice input[type=checkbox]{border-radius:4px}
+.choice input[type=checkbox]:checked{background:var(--ink)}
+.choice input[type=checkbox]:checked::after{content:"";width:.55rem;height:1rem;border:solid #fff;border-width:0 .25rem .25rem 0;transform:translateY(-.1rem) rotate(45deg)}
+.choice.only{max-width:26rem}
+
+.stepper{display:flex;align-items:stretch;gap:0;border:3px solid var(--ink);border-radius:var(--r-ctrl);width:max-content;background:#fff}
+.stepper button{font:inherit;font-size:2rem;font-weight:800;width:4rem;min-height:4rem;border:0;background:#fff;color:var(--ink);cursor:pointer}
+.stepper button:hover{background:#F3F5F2}
+.stepper button:disabled{color:#9AA09B;cursor:not-allowed}
+.stepper button:focus-visible{background:var(--focus);outline:none;box-shadow:none}
+.stepper output{display:grid;place-items:center;min-width:9rem;padding:0 1rem;font-size:1.45rem;font-weight:800;border-left:3px solid var(--ink);border-right:3px solid var(--ink)}
+.confirm{display:flex;gap:.6rem;align-items:center;font-weight:700;color:var(--sign);margin:.8rem 0 0}
+.shortcut{background:var(--navy-tint);border:2px solid var(--navy);border-radius:var(--r-ctrl);padding:1rem 1.1rem;margin:0 0 2rem;max-width:var(--measure)}
+.shortcut p{margin:0 0 .8rem}
+
+.errsum{border:4px solid var(--urgent);background:#fff;border-radius:var(--r-ctrl);padding:1.1rem 1.3rem;margin:0 0 1.6rem}
+.errsum h2{color:var(--urgent);font-size:1.5rem}
+.errsum ul{margin:0;padding-left:1.3rem}
+.errsum a{color:var(--urgent);font-weight:700}
+
+/* ===== Welcome ===== */
+.welcome{padding-top:1.6rem}
+.weekstrip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:1.6rem}
+.weekstrip div{border-radius:6px;padding:.55rem .6rem .7rem;min-height:6.2rem;font-size:1rem;line-height:1.25;background:var(--sign-deep);color:#fff}
+.weekstrip b{display:block;font-size:1.05rem;margin-bottom:.35rem}
+.weekstrip .rest{background:transparent;border:2px solid #4F8569;color:#D5E6DC}
+.weekstrip .table{background:#fff;color:var(--plum)}
+.weekstrip .table b{color:var(--ink)}
+.welcome-body{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:2rem 3rem;margin-top:2rem;align-items:start}
+.facts{list-style:none;margin:0 0 1.2rem;padding:0}
+.facts li{padding:.75rem 0;border-bottom:2px solid var(--line);font-size:1.2rem}
+.facts li:first-child{padding-top:0}
+.examples h2{font-size:1.45rem}
+.example{display:block;width:100%;text-align:left;font:inherit;background:#fff;border:2px solid var(--ink);border-radius:var(--r-ctrl);padding:.85rem 1.1rem;margin-bottom:.7rem;cursor:pointer;color:var(--ink);min-height:4rem}
+.example:hover{background:#F6F8F5}
+.example:focus-visible{background:var(--focus);outline:none;box-shadow:0 0 0 3px var(--ink)}
+.example b{display:block;font-size:1.25rem}
+.example span{display:block;color:var(--muted);font-size:1.1rem}
+
+/* ===== Check answers ===== */
+.answers-list{margin:0;padding:0;border-top:2px solid var(--ink)}
+.answers-list div{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) auto;gap:.4rem 1.2rem;padding:.9rem 0;border-bottom:2px solid var(--line);align-items:start}
+.answers-list dt{font-weight:700}
+.answers-list dd{margin:0}
+.answers-list .chg{justify-self:end}
+
+/* ===== Plan ===== */
+.plan-top{margin-top:1.6rem}
+.glance{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:1.4rem 0 0;padding:0;border-top:2px solid #4F8569}
+.glance div{padding:.8rem 1rem .2rem 0}
+.glance dt{font-size:1.05rem;color:#D5E6DC}
+.glance dd{margin:0;font-weight:800;font-size:1.3rem;color:#fff}
+.actions{display:flex;flex-wrap:wrap;gap:.8rem;margin:1.2rem 0 .4rem}
+.actions .btn{min-height:3.3rem;font-size:1.15rem;padding:.6rem 1.1rem}
+.small{font-size:1.05rem;color:var(--muted)}
+.confirm-panel{background:#fff;border:3px solid var(--urgent);border-radius:var(--r-ctrl);padding:1.1rem 1.3rem;margin:1rem 0;max-width:var(--measure)}
+.confirm-panel h2{font-size:1.4rem}
+.plan-grid{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2.5rem;margin-top:2rem;align-items:start}
+.toc{position:sticky;top:1rem}
+.toc h2{font-size:1.2rem;margin-bottom:.4rem}
+.toc ul{list-style:none;margin:0;padding:0;border-left:4px solid var(--sign)}
+.toc li{margin:0}
+.toc button{display:block;width:100%;text-align:left;font:inherit;font-size:1.1rem;background:none;border:0;padding:.45rem .8rem;color:var(--navy);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em;cursor:pointer}
+.toc button:focus-visible{background:var(--focus);color:var(--ink);text-decoration:none;outline:none;box-shadow:none}
+.block{margin-bottom:2.8rem}
+.block>h2{padding-bottom:.4rem;border-bottom:4px solid var(--ink);margin-bottom:1rem}
+.marker{display:inline-flex;align-items:center;gap:.45rem;font-size:1.05rem;font-weight:700;margin:0 0 .8rem}
+.marker::before{content:"";width:.85rem;height:.85rem;border-radius:2px;background:currentColor;flex:none}
+.marker.uk{color:var(--sign)} .marker.idea{color:var(--plum)} .marker.research{color:var(--navy)}
+.key{list-style:none;padding:0;margin:0 0 1.6rem;display:flex;flex-wrap:wrap;gap:.3rem 1.6rem;font-size:1.05rem}
+.key li{display:flex;gap:.45rem;align-items:center}
+.key li::before{content:"";width:.85rem;height:.85rem;border-radius:2px;flex:none;background:var(--c)}
+
+.notice{display:grid;grid-template-columns:2.6rem minmax(0,1fr);gap:.2rem 1rem;border-radius:var(--r-ctrl);padding:1.1rem 1.2rem;margin-bottom:1rem;border:3px solid}
+.notice .ico{width:2.4rem;height:2.4rem;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:1.4rem;color:#fff;line-height:1}
+.notice h3{font-size:1.3rem;margin-bottom:.35rem}
+.notice .kind{display:block;font-size:1.05rem;font-weight:700;margin-bottom:.15rem}
+.notice p:last-child,.notice ul:last-child{margin-bottom:0}
+.notice ul{padding-left:1.3rem;margin:.2rem 0 .8rem}
+.notice.urgent{background:var(--urgent-tint);border-color:var(--urgent)} .notice.urgent .ico{background:var(--urgent)} .notice.urgent .kind{color:var(--urgent)}
+.notice.check{background:var(--amber-tint);border-color:var(--amber)} .notice.check .ico{background:var(--amber)} .notice.check .kind{color:var(--amber)}
+.notice.info{background:var(--navy-tint);border-color:var(--navy)} .notice.info .ico{background:var(--navy)} .notice.info .kind{color:var(--navy)}
+.notice.ok{background:var(--sign-tint);border-color:var(--sign)} .notice.ok .ico{background:var(--sign)} .notice.ok .kind{color:var(--sign)}
+
+.summary{background:#fff;border:2px solid var(--ink);border-radius:var(--r-ctrl);padding:1.1rem 1.2rem;margin-bottom:1.2rem}
+.summary p{margin:0 0 .6rem}
+.summary p:last-child{margin:0}
+.meter{position:relative;height:18px;border:2px solid var(--ink);border-radius:4px;background:#fff;margin:.4rem 0 .3rem;max-width:30rem;overflow:hidden}
+.meter span{display:block;height:100%;background:var(--sign)}
+.meter-scale{display:flex;justify-content:space-between;max-width:30rem;font-size:1rem;color:var(--muted);margin-bottom:.6rem}
+
+.days{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.day{display:grid;grid-template-columns:11rem minmax(0,1fr);background:#fff;border:2px solid var(--ink);border-radius:var(--r-sign);overflow:hidden}
+.blade{background:var(--sign);color:#fff;padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.5rem;align-items:flex-start}
+.blade h3{color:#fff;font-size:1.55rem;margin:0}
+.blade .state{font-weight:700;font-size:1.05rem;color:#D5E6DC}
+.blade .today{background:var(--focus);color:var(--ink);font-weight:800;font-size:1rem;padding:.1rem .55rem;border-radius:4px}
+.day.rest .blade{background:#fff;color:var(--ink);border-right:2px dashed var(--ink)}
+.day.rest .blade h3{color:var(--ink)} .day.rest .blade .state{color:var(--muted)}
+.day-content{padding:.6rem 1.2rem 1rem}
+.item{padding:.75rem 0;border-bottom:2px solid #E2E6E1}
+.item:last-of-type{border-bottom:0}
+.item .what{display:block;font-weight:700;font-size:1.05rem;margin-bottom:.15rem}
+.item .what.move{color:var(--sign)} .item .what.meal{color:var(--ink)} .item .what.idea{color:var(--plum)}
+.item .title{font-weight:700;font-size:1.25rem;margin:0 0 .2rem}
+.item .how{margin:0 0 .3rem;color:var(--muted);font-size:1.15rem}
+.item .mins{margin:0 0 .4rem;font-weight:700;font-size:1.1rem}
+.item .btn.quiet{margin-top:.3rem}
+.day-foot{padding-top:.6rem}
+
+.gtable{width:100%;border-collapse:collapse;background:#fff;border:2px solid var(--ink)}
+.gtable th,.gtable td{text-align:left;padding:.9rem 1rem;border-bottom:2px solid #E2E6E1;vertical-align:top}
+.gtable th{width:32%}
+.gtable tr:last-child th,.gtable tr:last-child td{border-bottom:0}
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:12px;margin:0 0 1.2rem}
+.groups div{background:#fff;border:2px solid var(--ink);border-radius:var(--r-ctrl);padding:.9rem 1rem;border-top-width:10px}
+.groups b{display:block;font-size:1.2rem;margin-bottom:.2rem}
+.meals{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:12px}
+.panel{background:#fff;border:2px solid var(--ink);border-radius:var(--r-ctrl);padding:1rem 1.15rem}
+.panel h3{font-size:1.3rem}
+.panel ul{margin:0;padding-left:1.25rem}
+.panel li{margin-bottom:.6rem}
+.panel li span{display:block;font-size:1.05rem;color:var(--muted)}
+.ideas{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:12px}
+.ideas .panel{border-color:var(--plum);border-top-width:10px}
+.ideas .panel .research{margin:.6rem 0 0;padding-top:.6rem;border-top:2px solid #E2E6E1;font-size:1.05rem}
+.bmi{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-start}
+.bmi-num{font-size:3rem;font-weight:800;line-height:1;margin:0}
+.bmi-num span{display:block;font-size:1.05rem;font-weight:400;color:var(--muted);margin-top:.3rem}
+.sources ol{padding-left:1.4rem}
+.sources li{margin-bottom:.7rem}
+.fb{margin:0 0 1.6rem}
+.fb .choices{grid-template-columns:repeat(3,minmax(0,8.5rem))}
+.fbbtn{font:inherit;font-weight:700;font-size:1.2rem;min-height:3.4rem;border:2px solid var(--ink);border-radius:var(--r-ctrl);background:#fff;color:var(--ink);cursor:pointer}
+.fbbtn:hover{background:#F6F8F5}
+.fbbtn[aria-pressed="true"]{background:var(--select);border-width:3px}
+.fbbtn:disabled{cursor:default}
+.fbbtn:disabled:not([aria-pressed="true"]){color:#7C817D;border-color:#9AA09B}
+.fbbtn:focus-visible{outline:4px solid var(--ink);outline-offset:3px;box-shadow:0 0 0 3px var(--focus)}
+.fbthanks{font-weight:700;color:var(--sign);margin:.6rem 0 0}
+.privacy-box{background:var(--page);border:2px solid var(--ink);border-radius:var(--r-ctrl);padding:1rem 1.2rem;margin:0 0 1.2rem;max-width:46rem}
+.privacy-box h2{font-size:1.3rem}
+.privacy-box ul{margin:.2rem 0 .8rem;padding-left:1.3rem}
+footer{border-top:2px solid var(--ink);background:#fff;padding:1.8rem 0 2.5rem;font-size:1.1rem}
+footer p{max-width:46rem}
+.print-only{display:none}
+
+@media (max-width:860px){
+  .welcome-body{grid-template-columns:1fr}
+  .plan-grid{grid-template-columns:1fr}
+  .toc{display:none}
+  .glance{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .weekstrip{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (max-width:560px){
+  body{font-size:1.2rem}
+  .wrap{padding:0 .85rem}
+  .sign{padding:1.2rem 1.1rem 1.3rem}
+  .stepbody{padding:1.3rem 1.05rem 1.5rem}
+  .btn{width:100%}
+  .btn.quiet{width:auto}
+  .textsize p{flex-basis:100%}
+  .textsize button{flex:1;padding:.3rem .5rem}
+  .day{grid-template-columns:1fr}
+  .blade{flex-direction:row;align-items:center;flex-wrap:wrap;gap:.3rem .8rem;padding:.7rem 1rem}
+  .day.rest .blade{border-right:0;border-bottom:2px dashed var(--ink)}
+  .weekstrip{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .weekstrip div{min-height:0}
+  .answers-list div{grid-template-columns:1fr}
+  .answers-list .chg{justify-self:start}
+  .gtable th,.gtable td{display:block;width:100%}
+  .gtable th{border-bottom:0;padding-bottom:.1rem}
+  .notice{grid-template-columns:1fr}
+}
+@media print{
+  @page{margin:15mm}
+  html,html[data-size]{font-size:10.5pt}
+  body{background:#fff;font-size:10.5pt;line-height:1.4}
+  #sec-feedback,.masthead,.notebar,.actions,.small.no-print,.toc,.btn.quiet,.day-foot,footer,.skip,.no-print,.confirm-panel{display:none!important}
+  .print-only{display:block}
+  .plan-grid{display:block}
+  .sign,.blade{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .day,.notice,.panel,.groups div,.gtable tr{break-inside:avoid}
+  .day{grid-template-columns:10.5rem minmax(0,1fr)}
+  .blade h3{font-size:1.3rem}
+  .day-content .item:nth-last-child(2){border-bottom:0}
+  .block{margin-bottom:1.4rem}
+  .block>h2{break-after:avoid}
+  .sources a::after,.notice a::after{content:" (" attr(href) ")";font-size:8.5pt;word-break:break-all}
+  a{color:#000}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main" data-skip>Skip to main content</a>
+<header class="masthead">
+  <div class="wrap">
+    <a class="wordmark" href="#start">Common Ground<span>Food and movement planner</span></a>
+    <div class="textsize" role="group" aria-labelledby="tsLabel">
+      <p id="tsLabel">Text size</p>
+      <button type="button" data-size="m" aria-pressed="true">Standard</button>
+      <button type="button" data-size="l" aria-pressed="false">Large</button>
+      <button type="button" data-size="xl" aria-pressed="false">Largest</button>
+    </div>
+  </div>
+</header>
+<div class="notebar"><div class="wrap"><strong>Prototype for testing.</strong> A student design concept for a future community in 2035, shared with our group and tutors for feedback. The activity and food guidance is today’s UK public guidance. Not an NHS service and not medical advice.</div></div>
+
+<main id="main" tabindex="-1">
+  <div class="wrap">
+    <p class="vh" role="status" aria-live="polite" id="status"></p>
+
+    <!-- ===== Welcome ===== -->
+    <section id="view-start" data-view="start" aria-labelledby="startTitle" class="welcome">
+      <div class="sign sign-hero">
+        <p class="sign-meta">For people aged 60 and over</p>
+        <h1 id="startTitle" tabindex="-1">Plan a week of moving, eating and meeting up</h1>
+        <p>A week of ideas built on UK guidance. Change anything you like.</p>
+        <div class="weekstrip" aria-hidden="true">
+          <div><b>Mon</b>Brisk walk</div>
+          <div class="rest"><b>Tue</b>Rest</div>
+          <div><b>Wed</b>Walk, then strength and balance</div>
+          <div class="rest"><b>Thu</b>Rest</div>
+          <div><b>Fri</b>Group walk</div>
+          <div class="rest"><b>Sat</b>Rest</div>
+          <div class="table"><b>Sun</b>Sunday Table</div>
+        </div>
+      </div>
+      <div class="welcome-body">
+        <div>
+          <h2>How it works</h2>
+          <ul class="facts">
+            <li>Answer 6 short sets of questions. It takes about 5 minutes.</li>
+            <li>Check your answers before anything is made.</li>
+            <li>Get a week you can change: swap ideas, add days, or rest.</li>
+            <li><strong>Your answers stay on this device.</strong> No names, no medical records. The site only counts anonymous clicks, never your answers. <button type="button" class="textlink" data-jump-privacy>What we count</button></li>
+          </ul>
+          <button type="button" class="btn" data-go="about-you">Start planning</button>
+        </div>
+        <div class="examples">
+          <h2>Or look at an example</h2>
+          <p class="hint">These people are made up. Pick one to see a finished plan.</p>
+          <div id="sampleList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Steps ===== -->
+    <form id="planner" novalidate>
+      <section class="stepview" data-view="about-you" data-step="1" hidden>
+        <button type="button" class="textlink back" data-back>Back</button>
+        <div class="progress"></div>
+        <div class="sign step-sign"><h1 tabindex="-1">About you</h1></div>
+        <div class="stepbody">
+          <div class="errsum" tabindex="-1" hidden><h2>There is a problem</h2><ul></ul></div>
+          <div class="q" data-field="age">
+            <label class="qlabel" for="age">How old are you?</label>
+            <p class="hint" id="age-hint">In whole years. This planner is for people aged 60 and over.</p>
+            <p class="err" id="age-error"></p>
+            <input type="text" id="age" class="w-age" inputmode="numeric" autocomplete="off" spellcheck="false" aria-describedby="age-hint age-error">
+          </div>
+          <fieldset class="q" data-field="sex" aria-describedby="sex-hint">
+            <legend>What is your sex? (optional)</legend>
+            <p class="hint" id="sex-hint">You can leave this blank. The planner doesn’t use it, because the UK guidance is the same for everyone.</p>
+            <div class="choices two">
+              <label class="choice"><input type="radio" name="sex" value="woman"><b>Woman</b></label>
+              <label class="choice"><input type="radio" name="sex" value="man"><b>Man</b></label>
+              <label class="choice"><input type="radio" name="sex" value="another"><b>Another way</b></label>
+              <label class="choice"><input type="radio" name="sex" value="skip"><b>Prefer not to say</b></label>
+            </div>
+          </fieldset>
+          <div class="btn-row"><button type="submit" class="btn">Continue</button></div>
+        </div>
+      </section>
+
+      <section class="stepview" data-view="height-weight" data-step="2" hidden>
+        <button type="button" class="textlink back" data-back>Back</button>
+        <div class="progress"></div>
+        <div class="sign step-sign"><h1 tabindex="-1">Height and weight</h1></div>
+        <div class="stepbody">
+          <div class="errsum" tabindex="-1" hidden><h2>There is a problem</h2><ul></ul></div>
+          <p class="lead">This step is optional. We only use it to show a rough body mass index (BMI). Nothing else in your plan depends on it.</p>
+          <fieldset class="q">
+            <legend>Which units do you use?</legend>
+            <div class="choices two">
+              <label class="choice"><input type="radio" name="units" value="metric" checked><span><b>Centimetres and kilograms</b></span></label>
+              <label class="choice"><input type="radio" name="units" value="imperial"><span><b>Feet and stone</b></span></label>
+            </div>
+          </fieldset>
+          <div class="q" data-field="height">
+            <p class="qlabel">Height</p>
+            <p class="err" id="height-error"></p>
+            <div class="units-row" data-units="metric">
+              <label for="hCm">Centimetres<span class="suffix"><input type="text" id="hCm" class="w-3" inputmode="decimal" aria-describedby="height-error"> cm</span></label>
+            </div>
+            <div class="units-row" data-units="imperial" hidden>
+              <label for="hFt">Feet<span class="suffix"><input type="text" id="hFt" class="w-2" inputmode="numeric" aria-describedby="height-error"> ft</span></label>
+              <label for="hIn">Inches<span class="suffix"><input type="text" id="hIn" class="w-2" inputmode="decimal" aria-describedby="height-error"> in</span></label>
+            </div>
+          </div>
+          <div class="q" data-field="weight">
+            <p class="qlabel">Weight</p>
+            <p class="err" id="weight-error"></p>
+            <div class="units-row" data-units="metric">
+              <label for="wKg">Kilograms<span class="suffix"><input type="text" id="wKg" class="w-3" inputmode="decimal" aria-describedby="weight-error"> kg</span></label>
+            </div>
+            <div class="units-row" data-units="imperial" hidden>
+              <label for="wSt">Stone<span class="suffix"><input type="text" id="wSt" class="w-2" inputmode="numeric" aria-describedby="weight-error"> st</span></label>
+              <label for="wLb">Pounds<span class="suffix"><input type="text" id="wLb" class="w-2" inputmode="decimal" aria-describedby="weight-error"> lb</span></label>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button type="submit" class="btn">Continue</button>
+            <button type="button" class="btn secondary" id="skipBody">Skip this step</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="stepview" data-view="activity" data-step="3" hidden>
+        <button type="button" class="textlink back" data-back>Back</button>
+        <div class="progress"></div>
+        <div class="sign step-sign"><h1 tabindex="-1">Being active</h1></div>
+        <div class="stepbody">
+          <div class="errsum" tabindex="-1" hidden><h2>There is a problem</h2><ul></ul></div>
+          <fieldset class="q" data-field="level" aria-describedby="level-error">
+            <legend>Which sounds most like you at the moment?</legend>
+            <p class="err" id="level-error"></p>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="level" value="inactive" id="level-first"><span><b>Mostly sitting</b><small>I haven’t been active for a while</small></span></label>
+              <label class="choice"><input type="radio" name="level" value="light"><span><b>Some light activity</b><small>I move about the home and go for short, easy walks</small></span></label>
+              <label class="choice"><input type="radio" name="level" value="moderate"><span><b>Fairly active</b><small>On some days I do things that make me breathe faster, like brisk walking</small></span></label>
+              <label class="choice"><input type="radio" name="level" value="very"><span><b>Very active</b><small>I’m active most days, sometimes at a harder pace</small></span></label>
+            </div>
+          </fieldset>
+          <div class="btn-row"><button type="submit" class="btn">Continue</button></div>
+        </div>
+      </section>
+
+      <section class="stepview" data-view="food" data-step="4" hidden>
+        <button type="button" class="textlink back" data-back>Back</button>
+        <div class="progress"></div>
+        <div class="sign step-sign"><h1 tabindex="-1">Food</h1></div>
+        <div class="stepbody">
+          <div class="errsum" tabindex="-1" hidden><h2>There is a problem</h2><ul></ul></div>
+          <fieldset class="q" data-field="diet" aria-describedby="diet-error">
+            <legend>How do you usually eat?</legend>
+            <p class="err" id="diet-error"></p>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="diet" value="standard" id="diet-first"><span><b>An everyday mix</b><small>Including meat and fish</small></span></label>
+              <label class="choice"><input type="radio" name="diet" value="vegetarian"><span><b>Vegetarian</b><small>No meat or fish</small></span></label>
+              <label class="choice"><input type="radio" name="diet" value="plant"><span><b>Fully plant-based</b><small>No animal products</small></span></label>
+            </div>
+          </fieldset>
+          <fieldset class="q" aria-describedby="shared-hint">
+            <legend>Would you like ideas for sharing meals with others?</legend>
+            <p class="hint" id="shared-hint">Sunday Table and Cooking Club are Common Ground community ideas. They aren’t services you can book yet.</p>
+            <div class="choices two">
+              <label class="choice"><input type="radio" name="shared" value="yes" checked><b>Yes, include them</b></label>
+              <label class="choice"><input type="radio" name="shared" value="no"><b>No, leave them out</b></label>
+            </div>
+          </fieldset>
+          <div class="btn-row"><button type="submit" class="btn">Continue</button></div>
+        </div>
+      </section>
+
+      <section class="stepview" data-view="where" data-step="5" hidden>
+        <button type="button" class="textlink back" data-back>Back</button>
+        <div class="progress"></div>
+        <div class="sign step-sign"><h1 tabindex="-1">Where and how often</h1></div>
+        <div class="stepbody">
+          <div class="errsum" tabindex="-1" hidden><h2>There is a problem</h2><ul></ul></div>
+          <fieldset class="q" data-field="setting" aria-describedby="setting-hint setting-error">
+            <legend>Where do you like to be active?</legend>
+            <p class="hint" id="setting-hint">Choose as many as you like.</p>
+            <p class="err" id="setting-error"></p>
+            <div class="choices">
+              <label class="choice"><input type="checkbox" name="setting" value="outdoor" id="setting-first"><span><b>Outdoors</b><small>Parks, paths and gardens</small></span></label>
+              <label class="choice"><input type="checkbox" name="setting" value="home"><span><b>At home</b><small>No equipment needed</small></span></label>
+              <label class="choice"><input type="checkbox" name="setting" value="together"><span><b>With other people</b><small>Friends, groups and classes</small></span></label>
+            </div>
+          </fieldset>
+          <div class="q">
+            <p class="qlabel" id="daysLabel">How many days a week would you like ideas for?</p>
+            <p class="hint">You can add or remove days later.</p>
+            <div class="stepper" role="group" aria-labelledby="daysLabel">
+              <button type="button" id="daysDown" aria-label="One day fewer">−</button>
+              <output id="daysOut" aria-live="polite">4 days</output>
+              <button type="button" id="daysUp" aria-label="One day more">+</button>
+            </div>
+            <input type="hidden" id="days" value="4">
+          </div>
+          <div class="btn-row"><button type="submit" class="btn">Continue</button></div>
+        </div>
+      </section>
+
+      <section class="stepview" data-view="health" data-step="6" hidden>
+        <button type="button" class="textlink back" data-back>Back</button>
+        <div class="progress"></div>
+        <div class="sign step-sign"><h1 tabindex="-1">Your health</h1></div>
+        <div class="stepbody">
+          <div class="errsum" tabindex="-1" hidden><h2>There is a problem</h2><ul></ul></div>
+          <p class="lead">Five questions. Some answers mean it’s better to talk to a health professional before trying new ideas. You can choose “Prefer not to say” — the planner will then be careful.</p>
+          <div class="shortcut">
+            <p>If none of the five apply to you, answer “No” to all of them in one go.</p>
+            <button type="button" class="btn secondary" id="allNo">None of these apply to me</button>
+            <p class="confirm" id="allNoDone" hidden>Done. All five answers are set to “No”. Check them below.</p>
+          </div>
+          <div id="healthQs"></div>
+          <div class="btn-row"><button type="submit" class="btn">Continue</button></div>
+        </div>
+      </section>
+
+      <section class="stepview" data-view="check" hidden>
+        <button type="button" class="textlink back" data-back>Back</button>
+        <div class="sign step-sign"><p class="sign-meta">Last step</p><h1 tabindex="-1">Check your answers</h1></div>
+        <div class="stepbody">
+          <p class="lead">Change anything that isn’t right, then make your plan.</p>
+          <dl class="answers-list" id="answersList"></dl>
+          <div class="btn-row"><button type="button" class="btn" id="makePlan">Make my plan</button></div>
+        </div>
+      </section>
+    </form>
+
+    <!-- ===== Plan ===== -->
+    <section data-view="plan" hidden aria-labelledby="planTitle" class="plan-top">
+      <div class="print-only"><p><strong>Common Ground: food and movement planner (prototype).</strong> Educational ideas based on UK public guidance. Not medical advice. Printed <span id="printDate"></span>.</p></div>
+      <div class="sign">
+        <p class="sign-meta" id="planMeta">Your plan</p>
+        <h1 id="planTitle" tabindex="-1">Your week</h1>
+        <dl class="glance" id="glance"></dl>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn" id="printBtn">Print or save as PDF</button>
+        <button type="button" class="btn secondary" id="copyBtn">Copy the plan as text</button>
+        <button type="button" class="btn secondary" id="editBtn">Change my answers</button>
+        <button type="button" class="btn secondary" id="restartBtn">Start again</button>
+      </div>
+      <p class="small no-print">Use “Print or save as PDF” and choose “Save as PDF” as the printer to keep a copy.</p>
+      <div class="confirm-panel" id="restartPanel" hidden>
+        <h2 tabindex="-1" id="restartTitle">Clear your answers and start again?</h2>
+        <p>Your plan will be removed from this page. This can’t be undone.</p>
+        <div class="btn-row" style="margin-top:.6rem">
+          <button type="button" class="btn warn" id="restartYes">Yes, start again</button>
+          <button type="button" class="btn secondary" id="restartNo">No, keep my plan</button>
+        </div>
+      </div>
+      <div class="plan-grid">
+        <nav class="toc" aria-labelledby="tocTitle"><h2 id="tocTitle">On this page</h2><ul id="toc"></ul></nav>
+        <div id="results"></div>
+      </div>
+      <textarea id="copyFallback" class="vh" aria-hidden="true" tabindex="-1"></textarea>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>About this prototype.</strong> Common Ground is a student design concept: a 2035 community for adults aged 60 and over that links everyday movement, meal planning and time with others. This planner was built with AI assistance for discussion. It has not been tested with real participants. People over 60 differ widely in fitness, food, budget, transport and how sociable they like to be, so every idea is optional.</p>
+    <p>Educational planning only, not medical advice. In an emergency call 999. For urgent medical advice call 111 or go to 111.nhs.uk.</p>
+    <section class="privacy-box" id="privacy" aria-labelledby="privacyTitle" tabindex="-1">
+      <h2 id="privacyTitle">What this site counts</h2>
+      <p>Your answers stay in your browser. They are never sent anywhere, and closing the page clears them.</p>
+      <p>To improve the prototype we count anonymous events, such as how many people reach each step, finish a plan or press Print, and the answers to the optional feedback questions. We never send your age, sex, height, weight, health answers or plan.</p>
+      <p>Counting uses GoatCounter, which doesn’t use cookies and doesn’t keep IP addresses. If your browser sends Do Not Track or Global Privacy Control, nothing is counted.</p>
+      <p id="countState" role="status"></p>
+      <button type="button" class="btn quiet" id="countToggle" hidden></button>
+    </section>
+    <p class="small">Typeface: Atkinson Hyperlegible Next, SIL Open Font License 1.1. Guidance links checked 21 November 2026. <a href="https://github.com/Echo-YZ/common-ground-planner">Source code</a>.</p>
+  </div>
+</footer>
+
+<script>
+'use strict';
+/* =====================================================================
+   RULE TABLES — edit these to update content. Everything runs on this device.
+   ===================================================================== */
+const SOURCES = {
+  nhs1964:   {org:'NHS', title:'Physical activity guidelines for adults aged 19 to 64', url:'https://www.nhs.uk/live-well/exercise/physical-activity-guidelines-for-adults-aged-19-to-64/'},
+  nhs65:     {org:'NHS', title:'Physical activity guidelines for older adults (65 and over)', url:'https://www.nhs.uk/live-well/exercise/physical-activity-guidelines-older-adults/'},
+  cmo:       {org:'Department of Health and Social Care', title:'UK Chief Medical Officers’ physical activity guidelines', url:'https://www.gov.uk/government/publications/physical-activity-guidelines-uk-chief-medical-officers-report/uk-chief-medical-officers-physical-activity-guidelines'},
+  eatwell:   {org:'NHS', title:'The Eatwell Guide', url:'https://www.nhs.uk/live-well/eat-well/food-guidelines-and-food-labels/the-eatwell-guide/'},
+  nice:      {org:'NICE', title:'Quality standard QS212, statement 1: recording BMI and waist-to-height ratio in adults', url:'https://www.nice.org.uk/guidance/QS212/chapter/quality-statement-1-recording-bmi-and-waist-to-height-ratio-in-adults'},
+  weightloss:{org:'NHS', title:'Unintentional weight loss', url:'https://www.nhs.uk/symptoms/unintentional-weight-loss/'},
+  falls:     {org:'NHS', title:'Falls', url:'https://www.nhs.uk/conditions/falls/'},
+  nhs111:    {org:'NHS', title:'NHS 111 online', url:'https://111.nhs.uk/'},
+  gluchowski:{org:'Research', short:'Gluchowski et al. (2022)', title:'Gluchowski, A. et al. (2022) ‘A lot of people just go for walks, and don’t do anything else’: older adults in the UK are not aware of the strength component embedded in the Chief Medical Officers’ physical activity guidelines. International Journal of Environmental Research and Public Health, 19(16), 10002', url:'https://pmc.ncbi.nlm.nih.gov/articles/PMC9408713/'},
+  tsofliou:  {org:'Research', short:'Tsofliou et al. (2020)', title:'Tsofliou, F. et al. (2020) Effects of lunch club attendance on the dietary intake of older adults in the UK: a pilot cross-sectional study. Nutrition and Health, 26(3), 209–214', url:'https://doi.org/10.1177/0260106020921047'},
+  volkert:   {org:'Research', short:'Volkert et al. (2022)', title:'Volkert, D. et al. (2022) ESPEN practical guideline: clinical nutrition and hydration in geriatrics. Clinical Nutrition, 41(4), 958–989', url:'https://pubmed.ncbi.nlm.nih.gov/35306388/'}
+};
+
+/* Age bands: 60–64 follows the NHS 19–64 guidance; 65+ follows the older-adults guidance. */
+const AGE_BANDS = [
+  {id:'60-64', min:60, max:64, label:'60 to 64'},
+  {id:'65+',   min:65, max:120, label:'65 and over'}
+];
+
+const GUIDANCE = {
+  '60-64': {
+    source:['nhs1964','cmo'],
+    rows:[
+      ['Every day', 'Try to be active every day. Any activity is better than none.'],
+      ['Heart and breathing', 'Build up to at least 150 minutes a week of moderate activity (you breathe faster but can still talk), or 75 minutes of vigorous activity, or a mix. Spread it over the week.'],
+      ['Strength', 'Activities that work the major muscles — legs, hips, back, tummy, chest, shoulders and arms — on at least 2 days a week.'],
+      ['Sitting less', 'Cut down long spells of sitting or lying down, and break them up with some movement.']
+    ],
+    note:'From 65, UK guidance also highlights balance and flexibility.'
+  },
+  '65+': {
+    source:['nhs65','cmo'],
+    rows:[
+      ['Every day', 'Be active every day, even if it’s light activity. Some activity is better than none.'],
+      ['Strength, balance and flexibility', 'On at least 2 days a week. These can be done on their own or as part of other activities, and are in addition to the minutes below.'],
+      ['Heart and breathing', 'Build up gradually to at least 150 minutes a week of moderate activity (you can talk but not sing). If you’re already active, 75 minutes of vigorous activity, or a mix, is an alternative.'],
+      ['Sitting less', 'Break up long spells of sitting with light activity, or at least by standing up.']
+    ],
+    note:'NHS guidance suggests speaking to a GP first if you have not been active for a while or have a health condition.'
+  }
+};
+
+/* Activity ideas. kind: aerobic | strength | balance | flex | light. settings: where each can happen. */
+const ACTIVITIES = [
+  {id:'a_walk',    kind:'aerobic', settings:['outdoor'],          title:'Brisk walk in a park or along a quiet path', how:'A pace where you can talk but not sing.'},
+  {id:'a_garden',  kind:'aerobic', settings:['outdoor'],          title:'Active gardening: mowing, raking or weeding at a steady pace', how:'Keep going long enough to feel warmer and breathe a little faster.'},
+  {id:'a_cycle',   kind:'aerobic', settings:['outdoor'],          title:'Steady bike ride on a cycle path or quiet route', how:'Flat routes first. Add hills when you feel ready.'},
+  {id:'a_dance',   kind:'aerobic', settings:['home'],             title:'Dance to a few favourite songs at home', how:'Kitchen, living room, wherever there’s space to move.'},
+  {id:'a_march',   kind:'aerobic', settings:['home'],             title:'March on the spot or follow a standing routine to music', how:'Hold a chair back if you like. Swing your arms to raise the pace.'},
+  {id:'a_groupwalk',kind:'aerobic',settings:['together','outdoor'],title:'Group walk. Many areas run free walks led by volunteers', how:'A good way to find new routes and new company.'},
+  {id:'a_buddy',   kind:'aerobic', settings:['together','outdoor'],title:'Walk and talk with a friend or neighbour', how:'Pick a route with a café or bench halfway.'},
+  {id:'a_aqua',    kind:'aerobic', settings:['together'],         title:'Water aerobics at a local pool', how:'The water supports your weight while you move.'},
+  {id:'a_danceclass',kind:'aerobic',settings:['together'],        title:'Dance class: ballroom, line or community dance', how:'Many classes welcome beginners and people coming on their own.'},
+
+  {id:'s_sitstand',kind:'strength',settings:['home'],             title:'Sit-to-stand from a sturdy chair', how:'Stand up, then sit back down slowly. Repeat until your legs need a short rest.'},
+  {id:'s_wall',    kind:'strength',settings:['home'],             title:'Wall press-ups', how:'Hands flat on a wall at shoulder height. Bend and straighten your arms.'},
+  {id:'s_band',    kind:'strength',settings:['home'],             title:'Resistance band exercises for arms and legs', how:'Bands are inexpensive and fold away into a drawer.'},
+  {id:'s_shopping',kind:'strength',settings:['outdoor'],          title:'Carry your shopping home in two balanced bags', how:'Everyday lifting counts as strength activity.'},
+  {id:'s_digging', kind:'strength',settings:['outdoor'],          title:'Heavier gardening: digging, lifting pots, shovelling', how:'Bend your knees and keep loads close to your body.'},
+  {id:'s_class',   kind:'strength',settings:['together'],         title:'Chair-based strength, Pilates or yoga class', how:'Often run in community centres, libraries and leisure centres.'},
+
+  {id:'b_heeltoe', kind:'balance', settings:['home'],             title:'Heel-to-toe walk along a kitchen worktop', how:'Keep a hand on the worktop the whole time.'},
+  {id:'b_oneleg',  kind:'balance', settings:['home'],             title:'One-leg stand beside a sturdy chair', how:'Hold the chair back. Swap legs.'},
+  {id:'b_sideways',kind:'balance', settings:['home'],             title:'Sideways walking along a hallway', how:'Keep one hand on the wall.'},
+  {id:'b_taichi',  kind:'balance', settings:['together','outdoor'],title:'Tai chi in a park group or community hall', how:'Slow, flowing movements that work on balance.'},
+
+  {id:'f_calf',    kind:'flex',    settings:['home','outdoor'],   title:'Calf stretch against a wall or tree', how:'A gentle stretch. No bouncing, no pain.'},
+  {id:'f_neck',    kind:'flex',    settings:['home'],             title:'Seated neck turns and shoulder rolls', how:'Slow and easy, a few each way.'},
+  {id:'f_side',    kind:'flex',    settings:['home'],             title:'Seated side bends', how:'Sit tall, slide one hand towards the floor, then swap.'},
+  {id:'f_yoga',    kind:'flex',    settings:['together'],         title:'Gentle stretch or yoga class', how:'Tell the teacher about anything that limits your movement.'},
+
+  {id:'l_breaks',  kind:'light',   settings:['home'],             title:'Stand up and move about during TV ad breaks', how:'Small breaks from sitting add up across the day.'},
+  {id:'l_chores',  kind:'light',   settings:['home'],             title:'Light jobs: dusting, making the bed, watering plants', how:'Go at your own pace.'},
+  {id:'l_stroll',  kind:'light',   settings:['outdoor'],          title:'A short, easy walk to the post box or round the block', how:'Whatever distance feels comfortable today.'},
+  {id:'l_visit',   kind:'light',   settings:['together'],         title:'Walk to a neighbour’s or a local café to meet someone', how:'Company and a little movement in one trip.'}
+];
+const KIND_LABEL = {aerobic:'Heart and breathing', strength:'Strength', balance:'Balance', flex:'Flexibility', light:'Light movement'};
+
+/* Example session length for aerobic ideas, by current activity level (minutes). Examples only, not targets. */
+const SESSION_MINUTES = {light:15, moderate:25, very:30};
+
+/* Meal ideas. groups: fv fruit and veg; st starchy (wholegrain or higher fibre); pr beans, pulses, fish, eggs, meat and other proteins; da dairy and alternatives */
+const MEALS = [
+  {slot:'breakfast', diets:['standard','vegetarian'], title:'Porridge made with milk, topped with sliced banana', groups:['st','da','fv']},
+  {slot:'breakfast', diets:['standard','vegetarian'], title:'Wholemeal toast with a boiled egg and sliced tomatoes', groups:['st','pr','fv']},
+  {slot:'breakfast', diets:['standard','vegetarian'], title:'Plain yoghurt with berries (frozen are fine) and oats', groups:['da','fv','st']},
+  {slot:'breakfast', diets:['plant'], title:'Porridge with fortified soya drink, berries and a spoon of seeds', groups:['st','da','fv']},
+  {slot:'breakfast', diets:['plant'], title:'Scrambled tofu on wholemeal toast with spinach', groups:['pr','st','fv']},
+  {slot:'breakfast', diets:['plant'], title:'Fortified soya yoghurt with chopped apple and oats', groups:['da','fv','st']},
+
+  {slot:'lunch', diets:['standard'], title:'Sardines on wholemeal toast with a side salad', groups:['pr','st','fv'], tag:'oily fish'},
+  {slot:'lunch', diets:['standard','vegetarian','plant'], title:'Jacket potato (skin on) with baked beans and salad', groups:['st','pr','fv']},
+  {slot:'lunch', diets:['standard','vegetarian','plant'], title:'Lentil and vegetable soup with a wholemeal roll', groups:['pr','fv','st']},
+  {slot:'lunch', diets:['vegetarian','plant'], title:'Wholemeal wrap with hummus, grated carrot and salad leaves', groups:['st','pr','fv']},
+  {slot:'lunch', diets:['standard','vegetarian'], title:'Egg and cress sandwich on granary bread with cherry tomatoes', groups:['st','pr','fv']},
+
+  {slot:'dinner', diets:['standard'], title:'Baked salmon with new potatoes, peas and broccoli', groups:['pr','st','fv'], tag:'oily fish'},
+  {slot:'dinner', diets:['standard'], title:'Chicken and vegetable stir-fry with brown rice', groups:['pr','fv','st']},
+  {slot:'dinner', diets:['standard'], title:'Fish pie with a potato topping and green beans', groups:['pr','st','fv','da']},
+  {slot:'dinner', diets:['standard','vegetarian','plant'], title:'Three-bean chilli with brown rice', groups:['pr','st','fv']},
+  {slot:'dinner', diets:['vegetarian','plant'], title:'Chickpea and spinach curry with brown rice', groups:['pr','fv','st']},
+  {slot:'dinner', diets:['vegetarian','plant'], title:'Lentil bolognese with wholewheat pasta', groups:['pr','st','fv']},
+  {slot:'dinner', diets:['vegetarian'], title:'Vegetable omelette with a jacket potato and salad', groups:['pr','st','fv']},
+  {slot:'dinner', diets:['vegetarian','plant'], title:'Bean and root vegetable hotpot with crusty wholemeal bread', groups:['pr','fv','st']},
+  {slot:'dinner', diets:['standard'], title:'Lean mince cottage pie with extra carrots and leeks', groups:['pr','st','fv']},
+
+  {slot:'shared', diets:['standard'], title:'Roast chicken traybake with root vegetables: one tray, many plates', groups:['pr','fv','st']},
+  {slot:'shared', diets:['standard','vegetarian','plant'], title:'Big pot of bean and vegetable stew with crusty wholemeal bread', groups:['pr','fv','st']},
+  {slot:'shared', diets:['vegetarian','plant'], title:'Roast vegetable and chickpea traybake with herby potatoes', groups:['pr','fv','st']}
+];
+const GROUP_LABEL = {fv:'fruit and veg', st:'starchy food', pr:'protein', da:'dairy or alternative'};
+const DIET_NOTES = {
+  standard:'The Eatwell Guide suggests at least 2 portions of fish a week, one of them oily, like salmon, sardines or mackerel.',
+  vegetarian:'Beans, pulses, eggs and lentils are good protein choices, and pulses count towards your 5 A Day too.',
+  plant:'Choose fortified, unsweetened soya drinks and yoghurts. The Eatwell Guide lists them as dairy alternatives that provide calcium.'
+};
+
+const HEALTH_QS = [
+  {id:'h_symptoms', short:'Chest pain, dizziness or breathlessness when active', q:'In the last few months, have you had chest pain, felt faint or dizzy, or been unusually short of breath when active?', opts:['yes','no','unsure','pns']},
+  {id:'h_condition', short:'Health condition that could affect being active', q:'Do you have a heart, lung, joint or other health condition — or are you recovering from an illness or operation — that could affect being active?', opts:['yes','no','unsure','pns']},
+  {id:'h_falls', short:'A fall or worries about balance', q:'Have you had a fall in the past year, or do you worry about your balance?', opts:['yes','no','pns']},
+  {id:'h_eating', short:'Weight loss, low appetite or eating difficulty', q:'Recently, have you lost weight without trying, lost your appetite, or found chewing or swallowing difficult?', opts:['yes','no','unsure','pns']},
+  {id:'h_dietcond', short:'Special diet or condition affecting food', q:'Do you follow a special diet from a health professional, or have a condition that affects what you can eat? For example diabetes, kidney disease, coeliac disease or a food allergy.', opts:['yes','no','pns']}
+];
+const OPT_LABEL = {yes:'Yes', no:'No', unsure:'Not sure', pns:'Prefer not to say'};
+
+/* Safety rules: conservative. Effects pause or soften the related ideas only.
+   activity: 'paused' > 'gentle' > 'standard'.  sb: strength, balance and flexibility 'paused' | 'show'.  food: 'paused' | 'show'. */
+const SAFETY_RULES = [
+  {id:'symptoms', when:a=>['yes','unsure'].includes(a.h.h_symptoms), effects:{activity:'paused'}, level:'urgent',
+   title:'Talk to a GP before starting new or harder activity',
+   body:`<p>Chest pain, feeling faint or unusual breathlessness when active can have causes that need checking. We’ve paused the movement ideas in your plan.</p>
+   <ul><li><strong>Call 999</strong> if you have chest pain now, or someone collapses.</li><li>For urgent advice, <strong>call 111</strong> or use <a href="${SOURCES.nhs111.url}">111.nhs.uk</a>.</li><li>Otherwise, book an appointment with your GP surgery and say when it happens.</li></ul>`},
+  {id:'symptoms_pns', when:a=>a.h.h_symptoms==='pns', effects:{activity:'paused'}, level:'check',
+   title:'Movement ideas paused. Your choice is respected',
+   body:`<p>You chose not to answer the question about chest pain, dizziness or breathlessness. Because those symptoms matter for safety, we haven’t suggested new activity. If none of them apply to you, you can <button type="button" class="textlink" data-change="health">change your answer</button>. If they do, please speak to your GP first.</p>`},
+  {id:'condition', when:a=>['yes','unsure'].includes(a.h.h_condition), effects:{activity:'paused'}, level:'check',
+   title:'Ask your care team which activities suit you',
+   body:`<p>Your GP, practice nurse or physiotherapist knows your situation. We’ve paused personal movement ideas so you can check first. You could show them the general UK guidance on this page, or ask whether a local exercise programme would suit you.</p>`},
+  {id:'condition_pns', when:a=>a.h.h_condition==='pns', effects:{activity:'gentle'}, level:'info',
+   title:'We’ve kept movement ideas gentle',
+   body:`<p>If you have a health condition that affects being active, check with your GP or practice nurse before trying anything new.</p>`},
+  {id:'falls', when:a=>a.h.h_falls==='yes', effects:{sb:'paused', activity:'gentle'}, level:'check',
+   title:'Get your balance checked. Strength and balance ideas are paused',
+   body:`<p>Strength and balance activities can help people feel steadier, but after a fall or with balance worries it’s best to get advice first. NHS advice is to <strong>see a GP</strong> if you’ve had a fall or are worried about your balance. They may refer you to a falls service, which can include strength and balance training led by trained staff. In some areas you can refer yourself. Ask your GP surgery.</p>
+   <ul><li>If someone has fallen and may have hurt their head, neck, back or hip, or can’t get up: <strong>call 999</strong>.</li><li>If they may be hurt or unwell: <strong>call 111</strong>.</li></ul>
+   <p>More: <a href="${SOURCES.falls.url}">NHS: Falls</a></p>`},
+  {id:'falls_pns', when:a=>a.h.h_falls==='pns', effects:{}, level:'info',
+   title:'About balance',
+   body:`<p>Every balance idea here uses a sturdy support. If you’ve had a fall or feel unsteady, see a GP before trying them. <a href="${SOURCES.falls.url}">NHS: Falls</a></p>`},
+  {id:'inactive', when:a=>a.level==='inactive', effects:{activity:'gentle'}, level:'info',
+   title:'Starting gently',
+   body:`<p>Because you haven’t been active for a while, your plan only suggests light movement and fewer long spells of sitting. NHS guidance suggests speaking to a GP before building up, especially if you have a health condition. Even light activity is better than none.</p>`},
+  {id:'eating', when:a=>['yes','unsure'].includes(a.h.h_eating), effects:{food:'paused'}, level:'check',
+   title:'Talk to a GP about weight loss or eating difficulties. Meal ideas are paused',
+   body:`<p>Losing weight without trying, a smaller appetite, or difficulty chewing or swallowing are worth getting checked, and general meal ideas may not fit your needs. NHS advice is to see a GP if you keep losing weight without changing what you eat or how active you are, and to go as soon as possible if you have other symptoms too. A GP can also arrange support such as a dietitian if needed.</p>
+   <p>More: <a href="${SOURCES.weightloss.url}">NHS: Unintentional weight loss</a></p>`},
+  {id:'eating_pns', when:a=>a.h.h_eating==='pns', effects:{}, level:'info',
+   title:'About eating and weight',
+   body:`<p>If you’ve been losing weight without trying, or eating has become harder, see a GP. <a href="${SOURCES.weightloss.url}">NHS: Unintentional weight loss</a></p>`},
+  {id:'dietcond', when:a=>a.h.h_dietcond==='yes', effects:{food:'paused'}, level:'check',
+   title:'Follow your own dietary advice. Meal ideas are paused',
+   body:`<p>General ideas might not match a diet set for a health condition. Keep following your care team’s advice, and ask your GP about seeing a registered dietitian if you’d like help planning meals. The Eatwell Guide itself says people with special dietary or medical needs should check with a registered dietitian.</p>`},
+  {id:'dietcond_pns', when:a=>a.h.h_dietcond==='pns', effects:{}, level:'info',
+   title:'About special diets',
+   body:`<p>If you have a condition that affects what you can eat, check meal ideas with your care team or a registered dietitian.</p>`}
+];
+const LEVEL_WORD = {urgent:'Important', check:'Please check first', info:'Good to know', ok:'All clear'};
+const LEVEL_ICON = {urgent:'!', check:'!', info:'i', ok:'✓'};
+
+/* Common Ground community ideas (design concepts for a 2035 scenario) */
+const COMMUNITY = [
+  {id:'sunday', title:'Sunday Table', text:'A weekly shared meal with neighbours: cooked together, potluck or from a set Weekly Menu. Come for the food or just the company.', research:'tsofliou'},
+  {id:'cooking', title:'Cooking Club', text:'Cook a big pot together midweek and take portions home. Swap skills and share the cost.', research:'tsofliou'},
+  {id:'menus', title:'Weekly Menus', text:'A printed and on-screen menu card each week, built around the Eatwell Guide, with vegetarian and plant-based versions as standard.', research:null},
+  {id:'walks', title:'Walk and talk routes', text:'Short local routes with benches and stopping points, walked at different paces so nobody is left behind.', research:null},
+  {id:'strong', title:'Strong and Steady sessions', text:'Friendly strength and balance sessions in familiar places such as libraries, halls and community cafés, explained in plain words.', research:'gluchowski'}
+];
+const RESEARCH = {
+  gluchowski:'Interviews with 15 older adults in the UK found none were aware of the strength part of the UK activity guidelines, and misconceptions about strength training were a barrier. So this planner explains strength plainly and gives non-gym examples.',
+  tsofliou:'A small pilot study of 39 lunch club members in Dorset found intake of energy and several nutrients was higher on lunch club days. It’s a pilot, not proof, but it supports exploring shared meals.',
+  volkert:'European clinical nutrition guidance for older people stresses screening and individual assessment by professionals. So this planner pauses meal ideas and points to professional help when eating or weight is a concern.'
+};
+
+/* Made-up people for demonstrations. Not real people, not research participants. */
+const SAMPLES = [
+  {key:'ade', label:'Ade, 64', blurb:'Vegetarian, walks with friends', data:{age:'64', sex:'man', units:'metric', skip:false, hCm:'178', wKg:'82', level:'moderate', diet:'vegetarian', settings:['outdoor','together'], days:4, shared:'yes', h:{h_symptoms:'no',h_condition:'no',h_falls:'no',h_eating:'no',h_dietcond:'no'}}},
+  {key:'june', label:'June, 72', blurb:'Plant-based, worried about her balance', data:{age:'72', sex:'woman', units:'imperial', skip:false, hFt:'5', hIn:'3', wSt:'9', wLb:'7', level:'light', diet:'plant', settings:['home','together'], days:3, shared:'yes', h:{h_symptoms:'no',h_condition:'no',h_falls:'yes',h_eating:'no',h_dietcond:'no'}}},
+  {key:'sam', label:'Sam, 68', blurb:'Skips height and weight, active outdoors', data:{age:'68', sex:'skip', units:'metric', skip:true, level:'very', diet:'standard', settings:['outdoor','home'], days:5, shared:'no', h:{h_symptoms:'no',h_condition:'no',h_falls:'no',h_eating:'no',h_dietcond:'no'}}}
+];
+
+/* =====================================================================
+   ANONYMOUS COUNTING (GoatCounter, no cookies). Only event names are sent:
+   never answers, ages, measurements, health replies or plans.
+   ===================================================================== */
+const ANALYTICS = {
+  goatcounter: '',                       // GoatCounter site code, e.g. 'commonground' for https://commonground.goatcounter.com
+  hosts: ['echo-yz.github.io']           // count only on the public site, never on local copies or previews
+};
+const OPT_KEY = 'cg-no-count';
+function optedOut(){ try { return localStorage.getItem(OPT_KEY)==='1'; } catch(e){ return false; } }
+function setOptOut(on){ try { on ? localStorage.setItem(OPT_KEY,'1') : localStorage.removeItem(OPT_KEY); } catch(e){} }
+function privacySignal(){ return navigator.doNotTrack==='1' || window.doNotTrack==='1' || navigator.globalPrivacyControl===true; }
+function analyticsReady(){ return !!ANALYTICS.goatcounter && ANALYTICS.hosts.includes(location.hostname); }
+function canTrack(){ return analyticsReady() && !optedOut() && !privacySignal(); }
+function track(name){
+  if (!canTrack()) return;
+  const isPage = name==='/';
+  const q = new URLSearchParams({p: isPage ? '/' : '/event/'+name, t: isPage ? 'Common Ground planner' : name, e: isPage ? 'false' : 'true', rnd: Math.random().toString(36).slice(2)});
+  const url = `https://${ANALYTICS.goatcounter}.goatcounter.com/count?${q}`;
+  try { if (navigator.sendBeacon && navigator.sendBeacon(url)) return; } catch(e){}
+  try { const img = new Image(); img.referrerPolicy = 'no-referrer'; img.src = url; } catch(e){}
+}
+function renderPrivacy(){
+  const s = $('#countState'), b = $('#countToggle');
+  if (!analyticsReady()){ s.textContent = 'Counting is switched off on this copy of the page.'; b.hidden = true; }
+  else if (privacySignal()){ s.textContent = 'Your browser asks not to be tracked, so nothing is counted.'; b.hidden = true; }
+  else if (optedOut()){ s.textContent = 'You’ve turned counting off in this browser.'; b.hidden = false; b.textContent = 'Turn counting back on'; }
+  else { s.textContent = 'Anonymous counting is on.'; b.hidden = false; b.textContent = 'Stop counting my visits'; }
+  const fb = $('#sec-feedback'); if (fb) fb.hidden = !canTrack();
+}
+
+/* Optional feedback: fixed choices only, sent as anonymous counts. */
+const FEEDBACK = [
+  {id:'easy',  q:'Was the planner easy to use?', opts:['Yes','Partly','No']},
+  {id:'read',  q:'Was the text easy to read?', opts:['Yes','Partly','No']},
+  {id:'health',q:'Did the health questions feel comfortable to answer?', opts:['Yes','Partly','No']},
+  {id:'table', q:'Would you, or someone you know, go to a Sunday Table?', opts:['Yes','Maybe','No']}
+];
+const FB_SENT = {};
+function feedbackBlock(){
+  return `<section class="block" id="sec-feedback" aria-labelledby="fbTitle" tabindex="-1" ${canTrack()?'':'hidden'}>
+    <h2 id="fbTitle">Help improve this prototype</h2>
+    <p>Optional. Tap one answer for each question. We only count how many people choose each answer.</p>
+    ${FEEDBACK.map(f=>`<div class="fb" role="group" aria-labelledby="fb-${f.id}"><p class="qlabel" id="fb-${f.id}">${esc(f.q)}</p>
+      <div class="choices">${f.opts.map(o=>`<button type="button" class="fbbtn" data-fb="${f.id}" data-val="${o.toLowerCase()}" aria-pressed="${FB_SENT[f.id]===o.toLowerCase()}" ${FB_SENT[f.id]?'disabled':''}>${o}</button>`).join('')}</div>
+      <p class="fbthanks" id="fbt-${f.id}" ${FB_SENT[f.id]?'':'hidden'}>Thank you. Your answer has been counted.</p></div>`).join('')}
+  </section>`;
+}
+
+/* =====================================================================
+   HELPERS
+   ===================================================================== */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const CM_PER_IN = 2.54, KG_PER_LB = 0.45359237;
+const round1 = n => Math.round(n*10)/10;
+const fmt1 = n => (Math.round(n*10)/10).toFixed(1).replace(/\.0$/,'');
+function parseNum(s){ s = String(s||'').trim(); if(s==='') return null; if(!/^\d+(\.\d+)?$/.test(s)) return NaN; return parseFloat(s); }
+function announce(msg){ const s=$('#status'); s.textContent=''; setTimeout(()=>{ s.textContent=msg; }, 60); }
+function srcLink(key){ const s=SOURCES[key]; return `<a href="${esc(s.url)}">${esc(s.org==='Research' ? s.short : s.org+': '+s.title)}</a>`; }
+function listJoin(arr){ return arr.length<2 ? arr.join('') : arr.slice(0,-1).join(', ')+' and '+arr[arr.length-1]; }
+
+function metricToImperial(cm, kg){
+  const out = {};
+  if (cm!=null && !isNaN(cm)){ const tin = cm/CM_PER_IN; let ft=Math.floor(tin/12); let inch=round1(tin-ft*12); if(inch>=12){ft++;inch=0;} out.ft=ft; out.inch=inch; }
+  if (kg!=null && !isNaN(kg)){ const tlb = kg/KG_PER_LB; let st=Math.floor(tlb/14); let lb=round1(tlb-st*14); if(lb>=14){st++;lb=0;} out.st=st; out.lb=lb; }
+  return out;
+}
+function imperialToMetric(ft, inch, st, lb){
+  const out={};
+  if (ft!=null) out.cm = round1((ft*12 + (inch||0))*CM_PER_IN);
+  if (st!=null) out.kg = round1((st*14 + (lb||0))*KG_PER_LB);
+  return out;
+}
+function bmi(kg, m){ return kg/(m*m); }
+function bandFor(age){ return AGE_BANDS.find(b => age>=b.min && age<=b.max); }
+
+/* =====================================================================
+   FLOW: welcome → 6 steps → check answers → plan. Browser Back works (plain #names).
+   ===================================================================== */
+const STEPS = ['about-you','height-weight','activity','food','where','health'];
+const STEP_TITLES = {'about-you':'About you','height-weight':'Height and weight','activity':'Being active','food':'Food','where':'Where and how often','health':'Your health','check':'Check your answers'};
+const ROUTES = ['start', ...STEPS, 'check', 'plan'];
+const FIELD_STEP = {age:'about-you', height:'height-weight', weight:'height-weight', level:'activity', diet:'food', setting:'where', h_symptoms:'health', h_condition:'health', h_falls:'health', h_eating:'health', h_dietcond:'health'};
+let BODY_SKIPPED = false;
+let REACHED = 0;           // furthest step index the person has completed
+let RETURN_TO_CHECK = false;
+let STATE = null;
+let CURRENT = 'start';
+
+function go(name, opts={}){
+  if (location.hash !== '#'+name){
+    if (opts.replace){ try { history.replaceState(null,'','#'+name); } catch(e){ location.hash = name; return; } render(name); }
+    else location.hash = name;   // render happens on hashchange
+  } else render(name);
+}
+function allowed(name){
+  if (name==='start') return true;
+  if (name==='plan') return !!STATE;
+  if (name==='check') return REACHED >= STEPS.length;
+  const i = STEPS.indexOf(name);
+  return i>=0 && i <= REACHED;
+}
+function route(){
+  const name = (location.hash||'').slice(1) || 'start';
+  if (!ROUTES.includes(name)) return;          // ignore in-page anchors such as #main
+  if (!allowed(name)){ go(STATE ? 'plan' : (REACHED ? STEPS[Math.min(REACHED, STEPS.length-1)] : 'start'), {replace:true}); return; }
+  render(name);
+}
+function render(name, focus=true){
+  CURRENT = name;
+  $$('[data-view]').forEach(v => v.hidden = v.dataset.view !== name);
+  const view = $(`[data-view="${name}"]`);
+  const idx = STEPS.indexOf(name);
+  if (idx >= 0){
+    $('.progress', view).innerHTML = `<p>Step ${idx+1} of ${STEPS.length}</p><ol aria-hidden="true">${STEPS.map((s,i)=>`<li class="${i<idx?'done':i===idx?'now':''}"></li>`).join('')}</ol>`;
+    document.title = `Step ${idx+1} of ${STEPS.length}: ${STEP_TITLES[name]} | Common Ground`;
+  } else if (name==='check'){ buildCheck(); document.title = 'Check your answers | Common Ground'; }
+  else if (name==='plan'){ document.title = 'Your week | Common Ground'; }
+  else document.title = 'Common Ground | Food & Movement Planner';
+  window.scrollTo(0,0);
+  const h = $('h1', view); if (h && focus) h.focus({preventScroll:true});
+  if (name!=='start') track(idx>=0 ? 'step/'+(idx+1)+'-'+name : name==='check' ? 'step/7-check' : 'view-plan');
+}
+
+/* =====================================================================
+   FORM SET-UP
+   ===================================================================== */
+function buildHealthQs(){
+  $('#healthQs').innerHTML = HEALTH_QS.map((h,i) => `
+    <fieldset class="q" data-field="${h.id}" aria-describedby="${h.id}-error">
+      <legend>${i+1}. ${esc(h.q)}</legend>
+      <p class="err" id="${h.id}-error"></p>
+      <div class="choices opts">
+        ${h.opts.map((o,j)=>`<label class="choice"><input type="radio" name="${h.id}" value="${o}" ${j===0?`id="${h.id}-first"`:''}><b>${OPT_LABEL[o]}</b></label>`).join('')}
+      </div>
+    </fieldset>`).join('');
+}
+function buildSamples(){
+  $('#sampleList').innerHTML = SAMPLES.map(s => `<button type="button" class="example" data-sample="${s.key}"><b>${esc(s.label)}</b><span>${esc(s.blurb)}</span></button>`).join('');
+}
+function currentUnits(){ return ($('input[name="units"]:checked')||{}).value || 'metric'; }
+function showUnits(u){ $$('[data-units]').forEach(el => el.hidden = el.dataset.units !== u); }
+function switchUnits(to){
+  if (to==='imperial'){
+    const r = metricToImperial(parseNum($('#hCm').value), parseNum($('#wKg').value));
+    $('#hFt').value = r.ft!=null ? r.ft : ''; $('#hIn').value = r.inch!=null ? fmt1(r.inch) : '';
+    $('#wSt').value = r.st!=null ? r.st : ''; $('#wLb').value = r.lb!=null ? fmt1(r.lb) : '';
+  } else {
+    const ft=parseNum($('#hFt').value), inch=parseNum($('#hIn').value), st=parseNum($('#wSt').value), lb=parseNum($('#wLb').value);
+    const r = imperialToMetric(isNaN(ft)?null:ft, isNaN(inch)?0:inch, isNaN(st)?null:st, isNaN(lb)?0:lb);
+    $('#hCm').value = r.cm!=null ? fmt1(r.cm) : ''; $('#wKg').value = r.kg!=null ? fmt1(r.kg) : '';
+  }
+  showUnits(to);
+}
+function setDays(n){
+  n = Math.max(1, Math.min(7, n));
+  $('#days').value = n;
+  $('#daysOut').textContent = n===7 ? 'Every day' : `${n} day${n>1?'s':''}`;
+  $('#daysDown').disabled = n<=1; $('#daysUp').disabled = n>=7;
+}
+
+/* =====================================================================
+   READ + VALIDATE
+   ===================================================================== */
+function radio(name){ return ($(`input[name="${name}"]:checked`)||{}).value || ''; }
+function readForm(){
+  const h = {}; HEALTH_QS.forEach(q => h[q.id] = radio(q.id));
+  return {
+    ageRaw: $('#age').value.trim(), sex: radio('sex') || 'skip', units: currentUnits(), skip: BODY_SKIPPED,
+    hCm: $('#hCm').value, wKg: $('#wKg').value, hFt: $('#hFt').value, hIn: $('#hIn').value, wSt: $('#wSt').value, wLb: $('#wLb').value,
+    level: radio('level'), diet: radio('diet'), settings: $$('input[name="setting"]:checked').map(i=>i.value),
+    days: parseInt($('#days').value,10), shared: radio('shared') !== 'no', h
+  };
+}
+function validate(a){
+  const errors = []; const out = {};
+  const age = parseNum(a.ageRaw);
+  if (a.ageRaw==='') errors.push(['age','age','Enter your age']);
+  else if (isNaN(age) || !Number.isInteger(age)) errors.push(['age','age','Enter your age as a whole number, like 67']);
+  else if (age < 60) errors.push(['age','age','This planner is for people aged 60 and over. Enter an age of 60 or more']);
+  else if (age > 120) errors.push(['age','age','Enter an age of 120 or less']);
+  else { out.age = age; out.band = bandFor(age); }
+
+  if (!a.skip){
+    let cm=null, kg=null;
+    if (a.units==='metric'){
+      const h=parseNum(a.hCm), w=parseNum(a.wKg);
+      if (h===null) errors.push(['height','hCm','Enter your height in centimetres, or choose ‘Skip this step’']);
+      else if (isNaN(h)) errors.push(['height','hCm','Enter your height as a number, like 165']);
+      else if (h<120 || h>220) errors.push(['height','hCm','Height must be between 120 cm and 220 cm']);
+      else cm=h;
+      if (w===null) errors.push(['weight','wKg','Enter your weight in kilograms, or choose ‘Skip this step’']);
+      else if (isNaN(w)) errors.push(['weight','wKg','Enter your weight as a number, like 70']);
+      else if (w<30 || w>250) errors.push(['weight','wKg','Weight must be between 30 kg and 250 kg']);
+      else kg=w;
+    } else {
+      const ft=parseNum(a.hFt), inch=parseNum(a.hIn), st=parseNum(a.wSt), lb=parseNum(a.wLb);
+      if (ft===null) errors.push(['height','hFt','Enter your height in feet and inches, or choose ‘Skip this step’']);
+      else if (isNaN(ft) || !Number.isInteger(ft)) errors.push(['height','hFt','Enter feet as a whole number, like 5']);
+      else if (inch!==null && (isNaN(inch) || inch>=12)) errors.push(['height','hIn','Enter inches as a number from 0 to 11']);
+      else { const c=(ft*12+(inch||0))*CM_PER_IN; if (c<119.5 || c>220.5) errors.push(['height','hFt','Height must be between 3 ft 11 in and 7 ft 3 in']); else cm=c; }
+      if (st===null) errors.push(['weight','wSt','Enter your weight in stone and pounds, or choose ‘Skip this step’']);
+      else if (isNaN(st) || !Number.isInteger(st)) errors.push(['weight','wSt','Enter stone as a whole number, like 11']);
+      else if (lb!==null && (isNaN(lb) || lb>=14)) errors.push(['weight','wLb','Enter pounds as a number from 0 to 13']);
+      else { const k=(st*14+(lb||0))*KG_PER_LB; if (k<29.5 || k>250.5) errors.push(['weight','wSt','Weight must be between 4 st 10 lb and 39 st 5 lb']); else kg=k; }
+    }
+    if (cm!=null && kg!=null){ out.cm=cm; out.kg=kg; out.bmi=bmi(kg, cm/100); }
+  }
+  if (!a.level) errors.push(['level','level-first','Choose the answer that sounds most like you']);
+  if (!a.diet) errors.push(['diet','diet-first','Choose how you usually eat']);
+  if (!a.settings.length) errors.push(['setting','setting-first','Choose at least one place you like to be active']);
+  HEALTH_QS.forEach((q,i) => { if (!a.h[q.id]) errors.push([q.id, q.id+'-first', `Question ${i+1}: choose an answer, or ‘Prefer not to say’`]); });
+  return {errors, out};
+}
+function clearErrors(view){
+  const scope = view || document;
+  $$('.q.has-error', scope).forEach(f => f.classList.remove('has-error'));
+  $$('.err', scope).forEach(e => e.textContent='');
+  $$('[aria-invalid]', scope).forEach(e => e.removeAttribute('aria-invalid'));
+  $$('.errsum', scope).forEach(s => { s.hidden = true; $('ul', s).innerHTML=''; });
+}
+function showErrors(view, errors){
+  clearErrors(view);
+  const box = $('.errsum', view);
+  $('ul', box).innerHTML = errors.map(([f,t,msg]) => `<li><a href="#${t}" data-target="${t}">${esc(msg)}</a></li>`).join('');
+  const seen = new Set();
+  errors.forEach(([field, target, msg]) => {
+    const f = $(`[data-field="${field}"]`, view); if (f) f.classList.add('has-error');
+    const em = $(`#${field}-error`);
+    if (em && !seen.has(field)){ em.innerHTML = `<span class="vh">Error: </span>${esc(msg)}`; seen.add(field); }
+    const t = document.getElementById(target); if (t && t.type==='text') t.setAttribute('aria-invalid','true');
+  });
+  box.hidden = false; box.focus();
+  track('error/'+CURRENT);
+  document.title = 'Error: ' + document.title.replace(/^Error: /,'');
+}
+function stepErrors(step){
+  const {errors} = validate(readForm());
+  return errors.filter(e => FIELD_STEP[e[0]] === step);
+}
+function nextStep(step){
+  const view = $(`[data-view="${step}"]`);
+  if (step==='height-weight') BODY_SKIPPED = false;
+  const errs = stepErrors(step);
+  if (errs.length){ showErrors(view, errs); return; }
+  clearErrors(view);
+  const i = STEPS.indexOf(step);
+  REACHED = Math.max(REACHED, i+1);
+  if (RETURN_TO_CHECK && REACHED >= STEPS.length){ RETURN_TO_CHECK = false; go('check'); return; }
+  go(i+1 < STEPS.length ? STEPS[i+1] : 'check');
+}
+
+/* =====================================================================
+   CHECK ANSWERS
+   ===================================================================== */
+function bodyText(a, v){
+  if (a.skip || v.bmi==null) return 'Not given';
+  return a.units==='metric' ? `${fmt1(v.cm)} cm, ${fmt1(v.kg)} kg` : `${a.hFt} ft ${a.hIn||0} in, ${a.wSt} st ${a.wLb||0} lb`;
+}
+function answerRows(a, v){
+  const sexLabel = {woman:'Woman', man:'Man', another:'Another way', skip:'Not given'}[a.sex];
+  const lvl = {inactive:'Mostly sitting', light:'Some light activity', moderate:'Fairly active', very:'Very active'}[a.level];
+  const diet = {standard:'An everyday mix', vegetarian:'Vegetarian', plant:'Fully plant-based'}[a.diet];
+  const settings = listJoin(a.settings.map(s=>({outdoor:'Outdoors',home:'At home',together:'With other people'}[s])));
+  return [
+    ['Age', String(v.age), 'about-you', 'age'],
+    ['Sex', sexLabel+' (not used in the plan)', 'about-you', 'sex'],
+    ['Height and weight', bodyText(a, v), 'height-weight', 'height and weight'],
+    ['Being active now', lvl, 'activity', 'how active you are'],
+    ['How you eat', diet, 'food', 'how you eat'],
+    ['Shared meal ideas', a.shared ? 'Yes, include them' : 'No, leave them out', 'food', 'shared meal ideas'],
+    ['Where', settings, 'where', 'where you like to be active'],
+    ['Days a week', a.days===7 ? 'Every day' : String(a.days), 'where', 'days a week'],
+    ...HEALTH_QS.map((q,i)=>[q.short, OPT_LABEL[a.h[q.id]], 'health', 'health question '+(i+1)])
+  ];
+}
+function buildCheck(){
+  const a = readForm(), {out} = validate(a);
+  $('#answersList').innerHTML = answerRows(a, out).map(r => `<div><dt>${esc(r[0])}</dt><dd>${esc(r[1])}</dd><dd class="chg"><button type="button" class="btn quiet" data-change="${r[2]}">Change<span class="vh"> ${esc(r[3])}</span></button></dd></div>`).join('');
+}
+
+/* =====================================================================
+   RULE ENGINE
+   ===================================================================== */
+function evaluateSafety(a){
+  const rank = {standard:0, gentle:1, paused:2};
+  const policy = {activity:'standard', sb:'show', food:'show', notices:[]};
+  SAFETY_RULES.forEach(r => {
+    if (!r.when(a)) return;
+    const e = r.effects;
+    if (e.activity && rank[e.activity] > rank[policy.activity]) policy.activity = e.activity;
+    if (e.sb) policy.sb = e.sb;
+    if (e.food) policy.food = e.food;
+    policy.notices.push(r);
+  });
+  const order = {urgent:0, check:1, info:2};
+  policy.notices.sort((x,y) => order[x.level]-order[y.level]);
+  return policy;
+}
+function spreadDays(n){ const set = new Set(); for (let i=0;i<n;i++) set.add(Math.round(i*7/n)); return [...set]; }
+function poolFor(kind, settings){
+  const all = ACTIVITIES.filter(x => x.kind===kind);
+  const p = all.filter(x => x.settings.some(s => settings.includes(s)));
+  return p.length ? p : all;
+}
+function mealPool(slot, diet){ return MEALS.filter(m => m.slot===slot && m.diets.includes(diet)); }
+
+function buildPlan(a, v, policy){
+  const band = v.band.id;
+  const days = DAYS.map(name => ({name, active:false, moves:[], meal:null, community:[]}));
+  const active = spreadDays(a.days);
+  const counters = {};
+  const next = kind => { counters[kind] = (counters[kind]||0); return counters[kind]++; };
+  const strengthDays = active.length>=2 ? [active[0], active[Math.floor(active.length/2)]] : active.slice(0,1);
+  active.forEach(i => days[i].active = true);
+  const movesFor = (isActive, isStrengthDay) => {
+    if (!isActive || policy.activity==='paused') return [];
+    if (policy.activity==='gentle') return [{kind:'light', idx:next('light')}];
+    const m = [{kind:'aerobic', idx:next('aerobic')}];
+    if (isStrengthDay && policy.sb==='show'){
+      m.push({kind:'strength', idx:next('strength')});
+      if (band==='65+'){ m.push({kind:'balance', idx:next('balance')}); m.push({kind:'flex', idx:next('flex')}); }
+    }
+    return m;
+  };
+  days.forEach((d,i) => {
+    d.moves = movesFor(d.active, strengthDays.includes(i));
+    d.meal = {slot: (a.shared && i===6) ? 'shared' : 'dinner', idx: i};
+    if (a.shared && i===6) d.community.push('sunday');
+    if (a.shared && i===2) d.community.push('cooking');
+  });
+  return {days};
+}
+
+/* =====================================================================
+   PLAN RENDERING
+   ===================================================================== */
+function todayIndex(){ return (new Date().getDay()+6)%7; }
+function activityItem(mv, dayIdx){
+  const pool = poolFor(mv.kind, STATE.a.settings);
+  const act = pool[mv.idx % pool.length];
+  const mins = mv.kind==='aerobic' ? SESSION_MINUTES[STATE.a.level] : null;
+  const withOthers = act.settings.includes('together') && STATE.a.settings.includes('together');
+  return `<div class="item">
+    <span class="what move">${KIND_LABEL[mv.kind]}${withOthers?', with other people':''}</span>
+    <p class="title">${esc(act.title)}</p>
+    <p class="how">${esc(act.how)}</p>
+    ${mins?`<p class="mins">About ${mins} minutes${STATE.a.level==='light'?'. Build up gradually':''}</p>`:''}
+    ${pool.length>1?`<button type="button" class="btn quiet" data-action="swapMove" data-day="${dayIdx}" data-kind="${mv.kind}">Swap this idea<span class="vh">: ${KIND_LABEL[mv.kind]} on ${DAYS[dayIdx]}</span></button>`:''}
+  </div>`;
+}
+function mealItem(d, i){
+  if (STATE.policy.food==='paused') return `<div class="item"><span class="what meal">Meal</span><p class="how">Meal ideas are paused. Follow advice from your GP or dietitian.</p></div>`;
+  const pool = mealPool(d.meal.slot, STATE.a.diet);
+  const m = pool[d.meal.idx % pool.length];
+  const shared = d.meal.slot==='shared';
+  return `<div class="item"><span class="what ${shared?'idea':'meal'}">${shared?'Shared meal for Sunday Table':'Meal idea'}</span>
+    <p class="title">${esc(m.title)}</p>
+    <p class="how">Gives you ${listJoin(m.groups.map(g=>GROUP_LABEL[g]))}${m.tag?`, including ${esc(m.tag)}`:''}.</p>
+    ${pool.length>1?`<button type="button" class="btn quiet" data-action="swapMeal" data-day="${i}">Swap this meal<span class="vh"> on ${DAYS[i]}</span></button>`:''}
+  </div>`;
+}
+function communityItem(id){
+  const c = COMMUNITY.find(x=>x.id===id);
+  const note = STATE.policy.food==='paused' ? ' Come for the company, and choose food that fits your own advice.' : '';
+  return `<div class="item"><span class="what idea">Common Ground idea</span><p class="title">${esc(c.title)}</p><p class="how">${esc(c.text)}${note}</p></div>`;
+}
+function dayCard(d, i){
+  const P = STATE.policy, isToday = i===todayIndex();
+  let moves;
+  if (d.active){
+    moves = P.activity==='paused' ? `<div class="item"><span class="what move">Movement</span><p class="how">Movement ideas are paused. See “Please check first” above.</p></div>` : d.moves.map(mv => activityItem(mv, i)).join('');
+  } else moves = `<div class="item"><span class="what">Rest day</span><p class="how">Rest, or keep up everyday movement and break up long spells of sitting.</p></div>`;
+  const state = d.active ? (P.activity==='paused' ? '' : 'Movement day') : 'Rest day';
+  return `<li class="day ${d.active?'':'rest'}" aria-labelledby="day-${i}">
+    <div class="blade"><h3 id="day-${i}">${d.name}</h3>${state?`<span class="state">${state}</span>`:''}${isToday?'<span class="today">Today</span>':''}</div>
+    <div class="day-content">
+      ${moves}${mealItem(d,i)}${d.community.map(communityItem).join('')}
+      ${P.activity!=='paused'?`<div class="day-foot"><button type="button" class="btn quiet" data-action="toggleDay" data-day="${i}">${d.active?`Make ${d.name} a rest day`:`Add movement on ${d.name}`}</button></div>`:''}
+    </div></li>`;
+}
+function weeklySummary(){
+  const P = STATE.policy, a = STATE.a;
+  if (P.activity!=='standard') return '';
+  const days = STATE.plan.days;
+  const sessions = days.filter(d => d.active && d.moves.some(m=>m.kind==='aerobic')).length;
+  const mins = sessions * SESSION_MINUTES[a.level];
+  const sDays = days.filter(d => d.moves.some(m=>m.kind==='strength')).length;
+  const pct = Math.min(100, Math.round(mins/150*100));
+  let s = `<div class="summary"><p><strong>These ideas add up to about ${mins} minutes of moderate activity this week.</strong> UK guidance suggests building up to at least 150 minutes. Add days or make walks longer when you feel ready.</p>
+    <div class="meter" role="img" aria-label="About ${mins} of 150 minutes"><span style="width:${pct}%"></span></div>
+    <div class="meter-scale" aria-hidden="true"><span>0</span><span>150 minutes</span></div>`;
+  if (a.level==='very') s += `<p>Already regularly active? UK guidance says 75 minutes of vigorous activity, or a mix of moderate and vigorous, is an alternative.</p>`;
+  if (P.sb==='show'){
+    const label = STATE.v.band.id==='65+' ? 'strength, balance and flexibility' : 'strength';
+    s += sDays>=2 ? `<p>Includes ${label} ideas on ${sDays} days.</p>` : `<p>UK guidance suggests ${label} activities on at least 2 days a week. Add a movement day to include them.</p>`;
+  }
+  return s + `</div>`;
+}
+function noticesHtml(){
+  const P = STATE.policy;
+  const card = (level, title, body) => `<div class="notice ${level}" role="${level==='urgent'?'alert':'note'}"><span class="ico" aria-hidden="true">${LEVEL_ICON[level]}</span><div><span class="kind">${LEVEL_WORD[level]}</span><h3>${esc(title)}</h3>${body}</div></div>`;
+  if (!P.notices.length) return card('ok','Nothing you told us needs a check first','<p>Go at your own pace. If you ever feel chest pain, severe breathlessness or dizziness while active, stop and get medical help. Call 999 in an emergency.</p>');
+  return P.notices.map(n => card(n.level, n.title, n.body)).join('');
+}
+function guidanceBlock(){
+  const band = STATE.v.band.id, g = GUIDANCE[band], P = STATE.policy;
+  const strengthText = band==='65+'
+    ? 'Anything that makes your muscles work hard enough that you need a short rest before repeating: carrying shopping, digging, standing up from a chair. No gym needed.'
+    : 'Anything that works your muscles hard: carrying heavy shopping, heavier gardening, wall press-ups, yoga or Pilates. No gym needed.';
+  return `<section class="block" id="sec-guidance" aria-labelledby="gTitle" tabindex="-1">
+    <h2 id="gTitle">UK activity guidance for ages ${STATE.v.band.label}</h2>
+    <p class="marker uk">UK guidance</p>
+    <table class="gtable"><caption class="vh">UK physical activity guidance for your age group</caption><tbody>
+    ${g.rows.map(r=>`<tr><th scope="row">${esc(r[0])}</th><td>${esc(r[1])}</td></tr>`).join('')}
+    </tbody></table>
+    <p style="margin-top:1rem">${esc(g.note)}</p>
+    ${P.activity==='standard' && P.sb==='show' ? `<p><strong>What counts as strength?</strong> ${strengthText}</p>`:''}
+    <p class="small">Sources: ${g.source.map(srcLink).join('; ')}.</p>
+  </section>`;
+}
+function foodBlock(){
+  const a = STATE.a, P = STATE.policy;
+  if (P.food==='paused'){
+    return `<section class="block" id="sec-food" aria-labelledby="fTitle" tabindex="-1"><h2 id="fTitle">Food</h2>
+      <p>Because of your answers, we haven’t suggested meals. The <a href="${SOURCES.eatwell.url}">NHS Eatwell Guide</a> is there for general reference, but please check what suits you with your GP or a registered dietitian.</p></section>`;
+  }
+  const groups = `<div class="groups">
+    <div style="border-top-color:#2F7A4F"><b>Fruit and vegetables</b>At least 5 portions a day, about a third of what you eat. Fresh, frozen, tinned and dried all count.</div>
+    <div style="border-top-color:#B88A1E"><b>Starchy foods</b>Potatoes, bread, rice and pasta, about a third. Choose wholegrain or higher fibre, and leave potato skins on.</div>
+    <div style="border-top-color:#8A3B2E"><b>Beans, pulses, fish, eggs and meat</b>Pulses are a good swap for meat. Eat less red and processed meat.</div>
+    <div style="border-top-color:var(--navy)"><b>Dairy and alternatives</b>Milk, yoghurt or fortified alternatives such as soya drinks. Pick lower-fat, lower-sugar options.</div>
+    <div style="border-top-color:#5E625F"><b>Oils and drinks</b>Small amounts of unsaturated oil. Aim for 6 to 8 drinks a day: water, tea, coffee and lower-fat milk all count.</div>
+  </div>`;
+  const lists = ['breakfast','lunch','dinner'].map(slot => {
+    const p = mealPool(slot, a.diet).slice(0,3);
+    return `<div class="panel"><h3>${slot[0].toUpperCase()+slot.slice(1)}</h3><ul>${p.map(m=>`<li>${esc(m.title)}<span>Gives you ${listJoin(m.groups.map(g=>GROUP_LABEL[g]))}</span></li>`).join('')}</ul></div>`;
+  }).join('');
+  return `<section class="block" id="sec-food" aria-labelledby="fTitle" tabindex="-1">
+    <h2 id="fTitle">Food: the Eatwell Guide in everyday meals</h2>
+    <p class="marker uk">UK guidance</p>
+    <p>The Eatwell Guide shows the balance to aim for over a day or a week, not at every meal. It applies to most adults, whatever their weight and whether or not they eat meat.</p>
+    ${groups}
+    <p><strong>${esc(DIET_NOTES[a.diet])}</strong> Frozen, tinned and dried fruit and veg cost less and all count.</p>
+    <div class="meals">${lists}</div>
+    <p class="small" style="margin-top:1rem">These are everyday examples, not a diet and not calorie or protein targets. Source: ${srcLink('eatwell')}.</p>
+  </section>`;
+}
+function communityBlock(){
+  const a = STATE.a, P = STATE.policy;
+  const list = COMMUNITY.filter(c => (c.id==='sunday'||c.id==='cooking') ? a.shared : true);
+  return `<section class="block" id="sec-community" aria-labelledby="cTitle" tabindex="-1">
+    <h2 id="cTitle">Common Ground ideas for 2035</h2>
+    <p class="marker idea">Common Ground idea</p>
+    <p>These are community design ideas we’re exploring. They aren’t services you can book today. Join in as much or as little as you like.</p>
+    <div class="ideas">${list.map(c => `<div class="panel"><h3>${esc(c.title)}</h3><p style="margin:0">${esc(c.text)}${(P.food==='paused' && (c.id==='sunday'||c.id==='cooking'))?' Everyone is welcome to come for the company, whatever they eat.':''}</p>
+      ${c.research?`<p class="research"><span class="marker research" style="margin:0 0 .3rem;display:flex">Research insight</span>${esc(RESEARCH[c.research])} ${srcLink(c.research)}</p>`:''}</div>`).join('')}</div>
+  </section>`;
+}
+function bmiBlock(){
+  const v = STATE.v;
+  let inner;
+  if (v.bmi==null) inner = `<p><strong>Skipped. That’s fine.</strong> Nothing else in your plan depends on it.</p>`;
+  else {
+    inner = `<div class="bmi"><p class="bmi-num">${v.bmi.toFixed(1)}<span>kg/m², an estimate</span></p>
+      <div style="flex:1 1 20rem;max-width:var(--measure)"><p>Worked out as weight in kilograms divided by height in metres, squared. It’s a rough number only: it can’t tell muscle from fat or show where weight is carried, and it isn’t used anywhere else in this plan.</p>
+      ${v.band.id==='65+'?`<p>NICE advises that BMI should be interpreted with caution in people aged 65 and over.</p>`:''}
+      <p>This planner doesn’t label your BMI or suggest any change in weight. If you have questions about your weight, your GP or practice nurse can look at the whole picture.</p></div></div>`;
+  }
+  return `<section class="block" id="sec-bmi" aria-labelledby="bmiTitle" tabindex="-1"><h2 id="bmiTitle">Body mass index (BMI)</h2>${inner}<p class="small">Source: ${srcLink('nice')}.</p></section>`;
+}
+function sourcesBlock(){
+  const keys = ['nhs1964','nhs65','cmo','eatwell','nice','weightloss','falls','nhs111','gluchowski','tsofliou','volkert'];
+  return `<section class="block sources" id="sec-sources" aria-labelledby="srcTitle" tabindex="-1"><h2 id="srcTitle">Sources</h2>
+    <ol>${keys.map(k=>{const s=SOURCES[k];return `<li>${s.org==='Research'?'':esc(s.org)+': '}<a href="${esc(s.url)}">${esc(s.title)}</a>${k==='volkert'?`<br><span class="small">${esc(RESEARCH.volkert)}</span>`:''}</li>`;}).join('')}</ol>
+    <p class="small">Links checked 21 November 2026. UK guidance is current evidence. Common Ground ideas are design proposals for a 2035 scenario.</p></section>`;
+}
+function renderPlan(){
+  const a=STATE.a, v=STATE.v, P=STATE.policy;
+  const modeLabel = {standard:'Full ideas', gentle:'Gentle start', paused:'Paused, check first'}[P.activity];
+  $('#planMeta').textContent = STATE.sample ? `Made-up example: ${STATE.sample.label}` : 'Your plan';
+  $('#glance').innerHTML = `<div><dt>Age group</dt><dd>${v.band.label}</dd></div><div><dt>Movement ideas</dt><dd>${modeLabel}</dd></div><div><dt>Days planned</dt><dd id="daysPlanned">${STATE.plan.days.filter(d=>d.active).length} of 7</dd></div><div><dt>Meals</dt><dd>${P.food==='paused'?'Paused, check first':{standard:'Everyday mix',vegetarian:'Vegetarian',plant:'Plant-based'}[a.diet]}</dd></div>`;
+  const sections = [['sec-check','Before you start'],['sec-week','Your week'],['sec-guidance','Activity guidance'],['sec-food','Food'],['sec-community','Common Ground ideas'],['sec-bmi','BMI'],...(canTrack()?[['sec-feedback','Give feedback']]:[]),['sec-sources','Sources']];
+  $('#toc').innerHTML = sections.map(s=>`<li><button type="button" data-jump="${s[0]}">${s[1]}</button></li>`).join('');
+  $('#results').innerHTML = `
+    ${STATE.sample?`<div class="notice info"><span class="ico" aria-hidden="true">i</span><div><span class="kind">Example</span><h3>${esc(STATE.sample.label)} is a made-up person</h3><p>To make the plan yours, <button type="button" class="textlink" data-change="about-you">change the answers</button>.</p></div></div>`:''}
+    <ul class="key" aria-label="What the colour keys mean">
+      <li style="--c:var(--sign)">UK guidance: current NHS and government advice</li>
+      <li style="--c:var(--plum)">Common Ground idea: a design concept for 2035</li>
+      <li style="--c:var(--navy)">Research insight: a published study behind a design choice</li>
+    </ul>
+    <section class="block" id="sec-check" aria-labelledby="checkTitle" tabindex="-1"><h2 id="checkTitle">Before you start</h2>${noticesHtml()}</section>
+    <section class="block" id="sec-week" aria-labelledby="weekTitle" tabindex="-1">
+      <h2 id="weekTitle">Your week</h2>
+      <p>Swap any idea, add a day or make any day a rest day. Nothing here is a prescription.</p>
+      <div id="weekSummary">${weeklySummary()}</div>
+      <ol class="days" id="week">${STATE.plan.days.map(dayCard).join('')}</ol>
+    </section>
+    ${guidanceBlock()}${foodBlock()}${communityBlock()}${bmiBlock()}${feedbackBlock()}${sourcesBlock()}`;
+  $('#printDate').textContent = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+}
+function rerenderWeek(focusSel){
+  $('#week').innerHTML = STATE.plan.days.map(dayCard).join('');
+  $('#weekSummary').innerHTML = weeklySummary();
+  $('#daysPlanned').textContent = `${STATE.plan.days.filter(d=>d.active).length} of 7`;
+  if (focusSel){ const el = $(focusSel); if (el) el.focus(); }
+}
+
+function planAsText(){
+  const a=STATE.a, v=STATE.v, P=STATE.policy, L=[];
+  L.push('COMMON GROUND: FOOD AND MOVEMENT PLANNER (prototype)');
+  L.push('Educational ideas based on UK guidance. Not medical advice.');
+  L.push(''); L.push(`Age group: ${v.band.label}`);
+  if (v.bmi!=null) L.push(`BMI estimate: ${v.bmi.toFixed(1)} kg/m² (a rough number only, not used in the plan)`);
+  if (P.notices.length){ L.push(''); L.push('BEFORE YOU START'); P.notices.forEach(n=>L.push('- '+n.title)); }
+  L.push(''); L.push('YOUR WEEK');
+  STATE.plan.days.forEach(d => {
+    const parts = [];
+    if (d.active){
+      if (P.activity==='paused') parts.push('Movement ideas paused (check first)');
+      else d.moves.forEach(mv => { const pool=poolFor(mv.kind,a.settings); const x=pool[mv.idx%pool.length]; parts.push(`${KIND_LABEL[mv.kind]}: ${x.title}${mv.kind==='aerobic'?` (about ${SESSION_MINUTES[a.level]} minutes)`:''}`); });
+    } else parts.push('Rest day');
+    if (P.food!=='paused'){ const pool=mealPool(d.meal.slot,a.diet); parts.push(`${d.meal.slot==='shared'?'Shared meal':'Meal'}: ${pool[d.meal.idx%pool.length].title}`); }
+    d.community.forEach(c => parts.push('Common Ground idea: '+COMMUNITY.find(x=>x.id===c).title));
+    L.push(`${d.name}`); parts.forEach(p => L.push('  - '+p));
+  });
+  L.push(''); L.push('UK GUIDANCE'); GUIDANCE[v.band.id].rows.forEach(r=>L.push(`- ${r[0]}: ${r[1]}`));
+  L.push(''); L.push('SOURCES'); Object.values(SOURCES).forEach(s=>L.push(`- ${s.org==='Research'?'':s.org+': '}${s.title} ${s.url}`));
+  return L.join('\n');
+}
+
+/* =====================================================================
+   ACTIONS
+   ===================================================================== */
+function makePlan(sample){
+  const a = readForm();
+  const {errors, out} = validate(a);
+  if (errors.length){ const step = FIELD_STEP[errors[0][0]]; go(step); setTimeout(()=>showErrors($(`[data-view="${step}"]`), errors.filter(e=>FIELD_STEP[e[0]]===step)), 0); return; }
+  const policy = evaluateSafety(a);
+  STATE = {a, v:out, policy, sample:sample||null};
+  STATE.plan = buildPlan(a, out, policy);
+  renderPlan();
+  track(sample ? 'plan-made/example-'+sample.key : 'plan-made/own');
+  if (!sample && !a.skip) track('units/'+a.units);
+  go('plan');
+}
+function resetAll(){
+  $('#planner').reset(); BODY_SKIPPED=false; REACHED=0; RETURN_TO_CHECK=false; STATE=null;
+  showUnits('metric'); setDays(4); clearErrors(); $('#allNoDone').hidden = true;
+}
+function fillSample(key){
+  const s = SAMPLES.find(x=>x.key===key), d = s.data;
+  resetAll();
+  $('#age').value = d.age;
+  const sx = $(`input[name="sex"][value="${d.sex}"]`); if (sx) sx.checked = true;
+  $(`input[name="units"][value="${d.units}"]`).checked = true; showUnits(d.units);
+  BODY_SKIPPED = !!d.skip;
+  ['hCm','wKg','hFt','hIn','wSt','wLb'].forEach(k => { if (d[k]!=null) $('#'+k).value = d[k]; });
+  $(`input[name="level"][value="${d.level}"]`).checked = true;
+  $(`input[name="diet"][value="${d.diet}"]`).checked = true;
+  $(`input[name="shared"][value="${d.shared}"]`).checked = true;
+  $$('input[name="setting"]').forEach(i => i.checked = d.settings.includes(i.value));
+  setDays(d.days);
+  Object.entries(d.h).forEach(([k,v]) => { $(`input[name="${k}"][value="${v}"]`).checked = true; });
+  REACHED = STEPS.length;
+  makePlan(s);
+  announce(`Showing the made-up example: ${s.label}`);
+}
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('button,a');
+  if (!t) return;
+  const d = t.dataset;
+  if (d.go){ go(d.go); return; }
+  if (d.sample){ fillSample(d.sample); return; }
+  if (d.back !== undefined){ const i = STEPS.indexOf(CURRENT); go(CURRENT==='check' ? 'health' : (i>0 ? STEPS[i-1] : 'start')); return; }
+  if (d.size && t.closest('.textsize')){
+    document.documentElement.dataset.size = d.size;
+    $$('.textsize button').forEach(b => b.setAttribute('aria-pressed', b===t ? 'true':'false'));
+    announce(`Text size: ${t.textContent}`); track('text-size/'+t.textContent.toLowerCase()); return;
+  }
+  if (d.fb){
+    if (FB_SENT[d.fb]) return;
+    FB_SENT[d.fb] = d.val; track(`feedback/${d.fb}/${d.val}`);
+    $$(`[data-fb="${d.fb}"]`).forEach(x => { x.disabled = true; x.setAttribute('aria-pressed', x===t ? 'true':'false'); });
+    $('#fbt-'+d.fb).hidden = false; announce('Thank you. Your answer has been counted.'); return;
+  }
+  if (d.jumpPrivacy !== undefined){ const el=$('#privacy'); el.scrollIntoView({block:'start'}); el.focus({preventScroll:true}); return; }
+  if (d.target){ e.preventDefault(); const el=document.getElementById(d.target); if (el){ el.scrollIntoView({block:'center'}); el.focus(); } return; }
+  if (d.skip !== undefined){ e.preventDefault(); $('#main').focus(); return; }
+  if (d.jump){ track('jump/'+d.jump.replace('sec-','')); const el=document.getElementById(d.jump); if (el){ el.scrollIntoView({block:'start'}); el.focus({preventScroll:true}); } return; }
+  if (d.change){ RETURN_TO_CHECK = true; go(d.change); return; }
+  const act = d.action, i = +d.day;
+  if (act==='swapMove'){
+    STATE.plan.days[i].moves.find(m=>m.kind===d.kind).idx++;
+    rerenderWeek(`[data-action="swapMove"][data-day="${i}"][data-kind="${d.kind}"]`);
+    announce(`New ${KIND_LABEL[d.kind].toLowerCase()} idea for ${DAYS[i]}`); track('swap-idea');
+  } else if (act==='swapMeal'){
+    STATE.plan.days[i].meal.idx++;
+    rerenderWeek(`[data-action="swapMeal"][data-day="${i}"]`);
+    announce(`New meal idea for ${DAYS[i]}`); track('swap-meal');
+  } else if (act==='toggleDay'){
+    const day = STATE.plan.days[i];
+    day.active = !day.active;
+    if (day.active){
+      const used = k => STATE.plan.days.reduce((n,x)=>n+x.moves.filter(m=>m.kind===k).length,0);
+      if (STATE.policy.activity==='gentle') day.moves=[{kind:'light', idx:used('light')}];
+      else {
+        day.moves=[{kind:'aerobic', idx:used('aerobic')+i}];
+        const sDays = STATE.plan.days.filter(x=>x.moves.some(m=>m.kind==='strength')).length;
+        if (sDays<2 && STATE.policy.sb==='show'){ day.moves.push({kind:'strength', idx:used('strength')}); if (STATE.v.band.id==='65+'){ day.moves.push({kind:'balance', idx:used('balance')}); day.moves.push({kind:'flex', idx:used('flex')}); } }
+      }
+    } else day.moves = [];
+    rerenderWeek(`[data-action="toggleDay"][data-day="${i}"]`);
+    announce(day.active ? `${DAYS[i]} is now a movement day` : `${DAYS[i]} is now a rest day`); track(day.active ? 'day-added' : 'day-rested');
+  }
+});
+
+$('#planner').addEventListener('submit', e => { e.preventDefault(); if (STEPS.includes(CURRENT)) nextStep(CURRENT); });
+$('#skipBody').addEventListener('click', () => {
+  BODY_SKIPPED = true; clearErrors($('[data-view="height-weight"]')); track('skip-height-weight');
+  REACHED = Math.max(REACHED, 2);
+  if (RETURN_TO_CHECK && REACHED >= STEPS.length){ RETURN_TO_CHECK=false; go('check'); } else go('activity');
+});
+$$('input[name="units"]').forEach(r => r.addEventListener('change', e => switchUnits(e.target.value)));
+$('#daysDown').addEventListener('click', () => setDays(+$('#days').value - 1));
+$('#daysUp').addEventListener('click', () => setDays(+$('#days').value + 1));
+$('#allNo').addEventListener('click', () => { HEALTH_QS.forEach(q => { $(`input[name="${q.id}"][value="no"]`).checked = true; }); $('#allNoDone').hidden = false; announce('All five answers are set to No'); });
+$('#makePlan').addEventListener('click', () => makePlan(null));
+$('#editBtn').addEventListener('click', () => { track('change-answers'); go('check'); });
+$('#restartBtn').addEventListener('click', () => { $('#restartPanel').hidden = false; $('#restartTitle').focus(); });
+$('#restartNo').addEventListener('click', () => { $('#restartPanel').hidden = true; $('#restartBtn').focus(); });
+$('#restartYes').addEventListener('click', () => { track('start-again'); $('#restartPanel').hidden = true; resetAll(); go('start'); announce('Your answers have been cleared'); });
+$('#printBtn').addEventListener('click', () => { track('print'); try { window.print(); } catch(err){ announce('Printing is blocked in this window. Open the downloaded file in your browser to print.'); } });
+$('#copyBtn').addEventListener('click', async () => {
+  const text = planAsText(), btn = $('#copyBtn'); track('copy');
+  let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; }
+  catch(err){ const ta=$('#copyFallback'); ta.value=text; ta.select(); try{ ok=document.execCommand('copy'); }catch(e2){} }
+  btn.textContent = ok ? 'Copied' : 'Copying is blocked here. Try Print';
+  announce(ok ? 'Plan copied as text' : 'Copying is blocked in this window. Try Print instead');
+  setTimeout(()=>{ btn.textContent='Copy the plan as text'; }, 3000);
+});
+window.addEventListener('hashchange', route);
+
+buildHealthQs(); buildSamples(); showUnits('metric'); setDays(4);
+if ((location.hash||'').slice(1) && (location.hash||'').slice(1)!=='start') { try { history.replaceState(null,'','#start'); } catch(e){} }
+render('start', false);
+renderPrivacy();
+track('/');
+$('#countToggle').addEventListener('click', () => {
+  if (optedOut()){ setOptOut(false); renderPrivacy(); track('counting-back-on'); announce('Anonymous counting is on'); }
+  else { track('counting-turned-off'); setOptOut(true); renderPrivacy(); announce('Counting is off in this browser'); }
+});
+
+/* Pure functions exposed for automated checks. No data leaves the page. */
+window.CG = {metricToImperial, imperialToMetric, bmi, bandFor, evaluateSafety, validate, spreadDays, planAsText, get state(){return STATE;},
+  testAnalytics(cfg){ Object.assign(ANALYTICS, cfg); renderPrivacy(); }};
+</script>
+</body>
+</html>
