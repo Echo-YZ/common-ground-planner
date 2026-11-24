@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F0DDC6">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="Common Ground food and movement planner: a student design prototype for people aged 60 and over.">
@@ -33,7 +34,7 @@
   --flower:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224 220'%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M105.5 211.1C81.8 205.0 79.3 165.7 101.1 143.9C108.4 136.6 110.7 135.9 116.0 139.4C135.0 152.0 142.2 187.3 128.9 203.3C123.6 209.7 113.4 213.2 105.5 211.1ZM27.2 133.8C8.9 126.8 5.1 103.9 20.3 92.9C37.2 80.7 70.2 87.9 83.2 106.7L86.3 111.3L84.4 114.7C75.7 131.0 45.7 141.0 27.2 133.8ZM165.7 134.5C154.3 131.4 141.8 122.5 137.6 114.7L135.7 111.3L138.8 106.7C154.4 84.2 195.8 79.8 208.0 99.4C210.7 103.9 211.7 112.9 210.0 119.0C206.4 132.4 185.1 139.8 165.7 134.5ZM104.1 126.3C96.1 122.4 92.4 112.9 96.0 105.5C102.1 93.0 116.1 91.4 124.5 102.4C134.4 115.4 119.0 133.6 104.1 126.3ZM105.3 83.1C83.5 67.3 79.4 27.9 98.4 15.3C105.5 10.4 116.5 10.4 123.6 15.3C142.8 28.1 137.9 70.1 115.6 83.9C111.2 86.6 110.1 86.6 105.3 83.1Z'/%3E%3C/svg%3E");
   --font:"AHN",Verdana,"Segoe UI",system-ui,sans-serif;
   --r-big:16px; --r-sign:12px; --r-ctrl:8px;
-  --measure:40rem;
+  --measure:40rem; --gutter:1.25rem; --tile:120px;
 }
 html{font-size:100%;-webkit-text-size-adjust:100%}
 html,body{overflow-x:clip}
@@ -57,7 +58,13 @@ a:focus-visible,.textlink:focus-visible{outline:none;background:var(--clay);colo
 [hidden]{display:none!important}
 .skip{position:absolute;left:1rem;top:-200px;background:var(--clay);color:var(--ink);padding:.7rem 1.1rem;font-weight:700;z-index:20}
 .skip:focus{top:.6rem}
-.wrap{max-width:68rem;margin:0 auto;padding:0 1.25rem}
+.wrap{max-width:68rem;margin:0 auto;padding:0 var(--gutter)}
+/* full-width bands that break out of .wrap but keep their content on the same grid */
+.bleed{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);padding-left:max(var(--gutter),calc(50vw - 34rem + var(--gutter)));padding-right:max(var(--gutter),calc(50vw - 34rem + var(--gutter)))}
+/* The group's four-petal pattern, each colour on the other: cream flowers on sage, sage flowers on cream.
+   Text never sits on the pattern: it always has a solid card or panel underneath. */
+.pat-sage{background-color:var(--sage);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%23F0DDC6' fill-rule='evenodd'%3E%3Cpath transform='translate(4.84 5.20) scale(0.18)' d='M105.5 211.1C81.8 205.0 79.3 165.7 101.1 143.9C108.4 136.6 110.7 135.9 116.0 139.4C135.0 152.0 142.2 187.3 128.9 203.3C123.6 209.7 113.4 213.2 105.5 211.1ZM27.2 133.8C8.9 126.8 5.1 103.9 20.3 92.9C37.2 80.7 70.2 87.9 83.2 106.7L86.3 111.3L84.4 114.7C75.7 131.0 45.7 141.0 27.2 133.8ZM165.7 134.5C154.3 131.4 141.8 122.5 137.6 114.7L135.7 111.3L138.8 106.7C154.4 84.2 195.8 79.8 208.0 99.4C210.7 103.9 211.7 112.9 210.0 119.0C206.4 132.4 185.1 139.8 165.7 134.5ZM104.1 126.3C96.1 122.4 92.4 112.9 96.0 105.5C102.1 93.0 116.1 91.4 124.5 102.4C134.4 115.4 119.0 133.6 104.1 126.3ZM105.3 83.1C83.5 67.3 79.4 27.9 98.4 15.3C105.5 10.4 116.5 10.4 123.6 15.3C142.8 28.1 137.9 70.1 115.6 83.9C111.2 86.6 110.1 86.6 105.3 83.1Z'/%3E%3Cpath transform='translate(54.84 55.20) scale(0.18)' d='M105.5 211.1C81.8 205.0 79.3 165.7 101.1 143.9C108.4 136.6 110.7 135.9 116.0 139.4C135.0 152.0 142.2 187.3 128.9 203.3C123.6 209.7 113.4 213.2 105.5 211.1ZM27.2 133.8C8.9 126.8 5.1 103.9 20.3 92.9C37.2 80.7 70.2 87.9 83.2 106.7L86.3 111.3L84.4 114.7C75.7 131.0 45.7 141.0 27.2 133.8ZM165.7 134.5C154.3 131.4 141.8 122.5 137.6 114.7L135.7 111.3L138.8 106.7C154.4 84.2 195.8 79.8 208.0 99.4C210.7 103.9 211.7 112.9 210.0 119.0C206.4 132.4 185.1 139.8 165.7 134.5ZM104.1 126.3C96.1 122.4 92.4 112.9 96.0 105.5C102.1 93.0 116.1 91.4 124.5 102.4C134.4 115.4 119.0 133.6 104.1 126.3ZM105.3 83.1C83.5 67.3 79.4 27.9 98.4 15.3C105.5 10.4 116.5 10.4 123.6 15.3C142.8 28.1 137.9 70.1 115.6 83.9C111.2 86.6 110.1 86.6 105.3 83.1Z'/%3E%3C/g%3E%3C/svg%3E");background-size:var(--tile) var(--tile)}
+.pat-cream{background-color:var(--cream);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%2398A283' fill-rule='evenodd'%3E%3Cpath transform='translate(4.84 5.20) scale(0.18)' d='M105.5 211.1C81.8 205.0 79.3 165.7 101.1 143.9C108.4 136.6 110.7 135.9 116.0 139.4C135.0 152.0 142.2 187.3 128.9 203.3C123.6 209.7 113.4 213.2 105.5 211.1ZM27.2 133.8C8.9 126.8 5.1 103.9 20.3 92.9C37.2 80.7 70.2 87.9 83.2 106.7L86.3 111.3L84.4 114.7C75.7 131.0 45.7 141.0 27.2 133.8ZM165.7 134.5C154.3 131.4 141.8 122.5 137.6 114.7L135.7 111.3L138.8 106.7C154.4 84.2 195.8 79.8 208.0 99.4C210.7 103.9 211.7 112.9 210.0 119.0C206.4 132.4 185.1 139.8 165.7 134.5ZM104.1 126.3C96.1 122.4 92.4 112.9 96.0 105.5C102.1 93.0 116.1 91.4 124.5 102.4C134.4 115.4 119.0 133.6 104.1 126.3ZM105.3 83.1C83.5 67.3 79.4 27.9 98.4 15.3C105.5 10.4 116.5 10.4 123.6 15.3C142.8 28.1 137.9 70.1 115.6 83.9C111.2 86.6 110.1 86.6 105.3 83.1Z'/%3E%3Cpath transform='translate(54.84 55.20) scale(0.18)' d='M105.5 211.1C81.8 205.0 79.3 165.7 101.1 143.9C108.4 136.6 110.7 135.9 116.0 139.4C135.0 152.0 142.2 187.3 128.9 203.3C123.6 209.7 113.4 213.2 105.5 211.1ZM27.2 133.8C8.9 126.8 5.1 103.9 20.3 92.9C37.2 80.7 70.2 87.9 83.2 106.7L86.3 111.3L84.4 114.7C75.7 131.0 45.7 141.0 27.2 133.8ZM165.7 134.5C154.3 131.4 141.8 122.5 137.6 114.7L135.7 111.3L138.8 106.7C154.4 84.2 195.8 79.8 208.0 99.4C210.7 103.9 211.7 112.9 210.0 119.0C206.4 132.4 185.1 139.8 165.7 134.5ZM104.1 126.3C96.1 122.4 92.4 112.9 96.0 105.5C102.1 93.0 116.1 91.4 124.5 102.4C134.4 115.4 119.0 133.6 104.1 126.3ZM105.3 83.1C83.5 67.3 79.4 27.9 98.4 15.3C105.5 10.4 116.5 10.4 123.6 15.3C142.8 28.1 137.9 70.1 115.6 83.9C111.2 86.6 110.1 86.6 105.3 83.1Z'/%3E%3C/g%3E%3C/svg%3E");background-size:var(--tile) var(--tile)}
 .flower{display:inline-block;width:1em;height:1em;flex:none;background:currentColor;-webkit-mask:var(--flower) center/contain no-repeat;mask:var(--flower) center/contain no-repeat}
 
 /* ===== Header ===== */
@@ -75,11 +82,11 @@ a:focus-visible,.textlink:focus-visible{outline:none;background:var(--clay);colo
 .notebar .wrap{padding-top:.65rem;padding-bottom:.65rem}
 
 /* ===== Ornaments from the group's artwork (decorative only, never behind text) ===== */
-.orn-top,.orn-bottom{display:block;width:100%;height:auto;color:var(--sage)}
-.crown{padding-top:.4rem}
-.crown .orn-top{max-height:200px}
+.orn-top,.orn-bottom{display:block;width:100%;color:var(--sage)}
+.crown{display:block;line-height:0;color:var(--sage);background:var(--cream)}
+.crown .orn-top{height:clamp(72px,15vw,190px)}
 .leaves{display:block;color:var(--sage);margin-top:2rem;line-height:0}
-.leaves .orn-bottom{max-height:120px}
+.leaves .orn-bottom{height:clamp(56px,9vw,120px)}
 
 /* ===== Moss panels (headings, day names) ===== */
 .sign{background:var(--moss);color:#fff;border-radius:var(--r-sign);padding:1.6rem 1.8rem 1.8rem;position:relative}
@@ -105,6 +112,7 @@ a:focus-visible,.textlink:focus-visible{outline:none;background:var(--clay);colo
 
 /* ===== Steps ===== */
 main{padding-bottom:1rem}
+.welcome{margin-top:0}
 .stepview{padding-top:.4rem;max-width:46rem}
 .choices.opts{grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr))}
 .progress{margin:0 0 1rem}
@@ -166,7 +174,7 @@ input.w-age{width:7rem} input.w-3{width:8rem} input.w-2{width:6rem}
 .errsum a{color:var(--urgent);font-weight:700}
 
 /* ===== Welcome (follows the group's layout: cream header, sage meadow, moss hero, oat example bars, sage card) ===== */
-.meadow{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);padding-left:max(1.25rem,calc(50vw - 34rem + 1.25rem));padding-right:max(1.25rem,calc(50vw - 34rem + 1.25rem));background-color:var(--sage);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cg fill='%238C9677'%3E%3Cpath transform='translate(22 22) scale(.3)' fill-rule='evenodd' d='M105.5 211.1C81.8 205.0 79.3 165.7 101.1 143.9C108.4 136.6 110.7 135.9 116.0 139.4C135.0 152.0 142.2 187.3 128.9 203.3C123.6 209.7 113.4 213.2 105.5 211.1ZM27.2 133.8C8.9 126.8 5.1 103.9 20.3 92.9C37.2 80.7 70.2 87.9 83.2 106.7L86.3 111.3L84.4 114.7C75.7 131.0 45.7 141.0 27.2 133.8ZM165.7 134.5C154.3 131.4 141.8 122.5 137.6 114.7L135.7 111.3L138.8 106.7C154.4 84.2 195.8 79.8 208.0 99.4C210.7 103.9 211.7 112.9 210.0 119.0C206.4 132.4 185.1 139.8 165.7 134.5ZM104.1 126.3C96.1 122.4 92.4 112.9 96.0 105.5C102.1 93.0 116.1 91.4 124.5 102.4C134.4 115.4 119.0 133.6 104.1 126.3ZM105.3 83.1C83.5 67.3 79.4 27.9 98.4 15.3C105.5 10.4 116.5 10.4 123.6 15.3C142.8 28.1 137.9 70.1 115.6 83.9C111.2 86.6 110.1 86.6 105.3 83.1Z'/%3E%3Cpath transform='translate(132 132) scale(.3)' fill-rule='evenodd' d='M105.5 211.1C81.8 205.0 79.3 165.7 101.1 143.9C108.4 136.6 110.7 135.9 116.0 139.4C135.0 152.0 142.2 187.3 128.9 203.3C123.6 209.7 113.4 213.2 105.5 211.1ZM27.2 133.8C8.9 126.8 5.1 103.9 20.3 92.9C37.2 80.7 70.2 87.9 83.2 106.7L86.3 111.3L84.4 114.7C75.7 131.0 45.7 141.0 27.2 133.8ZM165.7 134.5C154.3 131.4 141.8 122.5 137.6 114.7L135.7 111.3L138.8 106.7C154.4 84.2 195.8 79.8 208.0 99.4C210.7 103.9 211.7 112.9 210.0 119.0C206.4 132.4 185.1 139.8 165.7 134.5ZM104.1 126.3C96.1 122.4 92.4 112.9 96.0 105.5C102.1 93.0 116.1 91.4 124.5 102.4C134.4 115.4 119.0 133.6 104.1 126.3ZM105.3 83.1C83.5 67.3 79.4 27.9 98.4 15.3C105.5 10.4 116.5 10.4 123.6 15.3C142.8 28.1 137.9 70.1 115.6 83.9C111.2 86.6 110.1 86.6 105.3 83.1Z'/%3E%3C/g%3E%3C/svg%3E");background-size:220px 220px;padding-top:2rem;padding-bottom:2.6rem;margin-top:.6rem}
+.meadow{padding-top:3rem;padding-bottom:3rem}
 .hero{background:var(--moss);color:#fff;border-radius:var(--r-big);padding:2rem 2.2rem 2.2rem;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:1.6rem 2.6rem;align-items:start}
 .hero-meta{font-size:1.2rem;font-weight:700;color:#E6EADB;margin:0 0 .7rem}
 .hero h1{color:#fff;font-size:clamp(2.3rem,6vw,3.7rem);line-height:1.04;letter-spacing:-.02em;margin:0}
@@ -178,21 +186,23 @@ input.w-age{width:7rem} input.w-3{width:8rem} input.w-2{width:6rem}
 .week-preview b{display:block;font-size:1.1rem}
 .week-preview li.rest{background:transparent;border:2px dashed #C9D1B3;color:#F2F4EC}
 .week-preview li.table{background:var(--clay);color:var(--ink)}
-.start-row{margin-top:1.6rem}
+.start-row{margin-top:2.4rem}
 .btn.start{width:100%;min-height:4.6rem;font-size:1.55rem;border-radius:var(--r-sign);border-color:var(--moss-deep);gap:.8rem}
 .btn.start .flower{width:1.6rem;height:1.6rem;color:var(--sage)}
 .btn.start:focus-visible .flower{color:var(--ink)}
-.ex-title{margin:2.2rem 0 .3rem;font-size:1.5rem;color:var(--ink)}
+.examples-card{background:var(--cream);border-radius:var(--r-big);padding:1.3rem 1.3rem 1.4rem;margin-top:2.6rem}
+.ex-title{margin:0 0 .3rem;font-size:1.5rem;color:var(--ink)}
 .ex-hint{margin:0 0 1rem;font-size:1.15rem;color:var(--ink)}
 .examples{display:grid;gap:12px}
-.example{display:flex;align-items:center;justify-content:space-between;gap:1rem;width:100%;text-align:left;font:inherit;background:var(--oat);border:2px solid var(--oat);border-radius:var(--r-sign);padding:.9rem 1.3rem;cursor:pointer;color:var(--ink);min-height:4.6rem}
+.example{display:flex;align-items:center;justify-content:space-between;gap:1rem;width:100%;text-align:left;font:inherit;background:var(--oat);border:2px solid #A99A86;border-radius:var(--r-sign);padding:.9rem 1.3rem;cursor:pointer;color:var(--ink);min-height:4.6rem}
 .example:hover{border-color:var(--moss-deep)}
 .example:focus-visible{background:var(--clay);border-color:var(--ink);outline:4px solid var(--ink);outline-offset:3px;box-shadow:none}
 .example b{display:block;font-size:1.3rem}
 .example span{display:block;font-size:1.1rem}
 .example .go{flex:none;display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-size:1.1rem}
 .example .go::after{content:"";width:.55rem;height:.55rem;border-right:3px solid currentColor;border-top:3px solid currentColor;transform:rotate(45deg)}
-.howcard{background:var(--sage);border-radius:var(--r-big);padding:14px;margin:2.6rem 0 0}
+.how-band{padding-top:3rem;padding-bottom:3rem}
+.howcard{background:var(--moss);border-radius:var(--r-big);padding:10px}
 .howcard-inner{background:var(--surface);border-radius:calc(var(--r-big) - 6px);padding:1.8rem 2rem 2rem}
 .facts{list-style:none;margin:0 0 1.6rem;padding:0;max-width:46rem}
 .facts li{display:flex;gap:.9rem;align-items:flex-start;padding:.8rem 0;border-bottom:2px solid var(--oat);font-size:1.2rem}
@@ -207,7 +217,9 @@ input.w-age{width:7rem} input.w-3{width:8rem} input.w-2{width:6rem}
 .answers-list .chg{justify-self:end}
 
 /* ===== Plan ===== */
-.plan-top{margin-top:1.6rem}
+.plan-top{margin-top:0}
+.plan-band{padding-top:2.6rem;padding-bottom:2.4rem;margin-bottom:.8rem}
+.plan-band .actions{margin:1rem 0 0}
 .glance{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:1.4rem 0 0;padding:0;border-top:2px solid var(--sage)}
 .glance div{padding:.8rem 1rem .2rem 0}
 .glance dt{font-size:1.05rem;color:#E6EADB}
@@ -315,13 +327,13 @@ footer p{max-width:46rem}
 
 /* People who ask for more contrast, or use forced colours, get the plain version without ornaments. */
 @media (prefers-contrast:more){
-  .meadow{background-image:none}
+  .pat-sage,.pat-cream{background-image:none}
   .crown,.leaves{display:none}
   :root{--muted:var(--ink)}
 }
 @media (forced-colors:active){
   .crown,.leaves,.flower,.sign.step-sign::before,.blade::after{display:none}
-  .meadow{background-image:none}
+  .pat-sage,.pat-cream{background-image:none}
 }
 
 @media (max-width:900px){
@@ -331,8 +343,15 @@ footer p{max-width:46rem}
   .glance{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:560px){
+  :root{--gutter:.85rem; --tile:96px}
   body{font-size:1.2rem}
-  .wrap{padding:0 .85rem}
+  .examples-card{padding:1.1rem .9rem 1.2rem}
+  .how-band{padding-top:2.6rem;padding-bottom:2.6rem}
+  .meadow{padding-top:2.6rem;padding-bottom:2.6rem}
+  .start-row{margin-top:2rem}
+  .examples-card{margin-top:2.2rem}
+  .notebar{font-size:1rem}
+  .masthead .wrap{padding-top:.7rem;padding-bottom:.8rem;gap:.7rem}
   .sign{padding:1.2rem 1.1rem 1.3rem}
   .hero{padding:1.4rem 1.15rem 1.5rem}
   .week-preview{gap:8px}
@@ -363,6 +382,7 @@ footer p{max-width:46rem}
   body{background:#fff;font-size:10.5pt;line-height:1.4}
   #sec-feedback,.masthead,.notebar,.actions,.small.no-print,.toc,.btn.quiet,.day-foot,footer,.skip,.no-print,.confirm-panel,.crown,.leaves{display:none!important}
   .print-only{display:block}
+  .pat-sage,.pat-cream{background:none!important;padding-left:0!important;padding-right:0!important;margin-left:0!important;margin-right:0!important}
   .plan-grid{display:block}
   .sign,.blade,.notice,.day.rest .blade{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .day,.notice,.panel,.groups div,.gtable tr{break-inside:avoid}
@@ -379,6 +399,7 @@ footer p{max-width:46rem}
 </head>
 <body>
 <a class="skip" href="#main" data-skip>Skip to main content</a>
+<div class="crown" aria-hidden="true"><svg class="orn-top" viewBox="0 0 892 196" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false"><clipPath id="clipTop"><path d="M0 0H892V132H846V196H46V162H0Z"/></clipPath><path clip-path="url(#clipTop)" fill="currentColor" fill-rule="evenodd" d="M0.0 192.1L0.0 188.3L6.8 187.7C10.5 187.4 15.4 186.4 17.8 185.6L22.0 184.1L22.0 190.0L22.0 196.0L11.0 196.0L0.0 196.0L0.0 192.1ZM27.0 189.0C27.0 182.5 27.2 181.9 29.5 180.8C32.8 179.3 32.7 179.2 33.5 188.2L34.2 196.0L30.6 196.0L27.0 196.0L27.0 189.0ZM853.2 172.2C852.1 150.9 851.6 135.0 851.9 132.6C852.0 132.1 852.7 132.3 853.5 133.0C854.3 133.7 855.0 133.9 855.0 133.6C855.0 133.2 855.6 133.5 856.3 134.2C858.1 136.0 857.4 196.0 855.6 196.0C854.7 196.0 854.0 189.3 853.2 172.2ZM863.0 166.9C863.0 139.6 863.1 137.8 864.8 138.5C871.5 141.1 882.2 144.1 886.7 144.6L892.0 145.3L892.0 170.6L892.0 196.0L877.5 196.0L863.0 196.0L863.0 166.9ZM-0.0 183.2C-0.0 181.7 2.1 180.6 9.4 178.2C42.2 167.4 75.7 141.7 87.0 118.6C89.8 112.9 90.5 112.2 92.1 113.1C94.5 114.3 94.4 115.4 92.0 120.7C81.2 144.5 47.6 170.2 12.1 181.9C1.1 185.5 0.0 185.6 -0.0 183.2ZM644.5 184.3C638.9 183.8 635.0 181.0 635.0 177.5C635.0 176.3 637.5 168.5 640.5 160.3C643.5 152.0 646.8 141.9 647.9 137.9C650.4 128.8 654.0 96.5 654.0 83.5L654.0 73.9L662.2 74.5C668.1 74.9 671.8 74.7 675.0 73.7L679.5 72.3L691.0 78.1C720.5 92.8 740.7 109.2 747.2 123.6C749.9 129.6 750.8 144.7 749.0 153.3C747.4 161.4 744.7 164.0 730.7 170.9C707.3 182.5 678.9 186.9 644.5 184.3ZM602.8 176.0C588.8 171.9 580.1 168.5 566.5 161.8C548.9 153.1 545.2 150.5 544.0 146.2C539.2 129.1 540.7 115.8 549.2 99.8C556.4 86.3 574.5 72.7 600.4 61.5L610.2 57.2L617.4 61.0C625.4 65.3 635.0 69.1 642.6 70.9L647.7 72.1L648.4 78.8C651.6 113.2 638.6 161.7 622.3 176.0C618.1 179.8 615.5 179.8 602.8 176.0ZM0.0 86.5L0.0 0.0L21.2 0.0L42.5 0.0L42.6 12.3C43.0 40.8 59.7 81.4 80.3 103.6C83.4 107.0 86.0 110.2 86.0 110.8C86.0 116.1 60.8 141.9 46.0 151.8C32.8 160.7 6.2 173.0 0.4 173.0C0.2 173.0 0.0 134.1 0.0 86.5ZM758.1 143.6C757.5 142.9 756.5 139.7 755.9 136.4C754.7 130.0 751.5 120.9 749.1 117.0C741.7 105.0 721.1 89.3 696.3 76.7C683.7 70.3 683.1 69.8 684.0 67.6C684.5 66.3 684.7 65.0 684.6 64.9C684.4 64.7 684.0 63.3 683.7 61.9C683.0 59.3 683.2 59.2 690.8 57.7C714.4 52.9 734.5 55.7 755.5 66.8C764.2 71.4 764.6 71.8 767.7 78.0C777.3 97.3 776.6 123.7 766.1 140.2C763.0 145.1 760.3 146.3 758.1 143.6ZM170.1 135.0C164.2 134.2 159.8 131.9 161.2 130.5C161.5 130.2 165.8 130.4 170.6 131.1C182.4 132.6 207.8 131.7 219.2 129.2C224.1 128.2 228.0 127.7 228.0 128.0C228.0 130.2 224.6 132.4 219.0 133.6C211.2 135.4 179.2 136.3 170.1 135.0ZM881.9 134.5C827.6 123.7 772.2 72.3 753.1 15.2C748.4 0.8 748.3 0.0 751.8 0.0C754.7 0.0 755.0 0.4 757.1 6.8C776.0 64.5 839.3 125.2 884.2 128.7L892.0 129.3L892.0 132.6C892.0 136.5 891.9 136.5 881.9 134.5ZM512.9 123.3C493.2 102.9 483.6 81.9 483.6 59.5C483.6 46.5 485.2 42.3 492.8 35.2C502.1 26.7 508.3 24.9 527.0 24.9C545.7 25.0 570.2 28.5 592.5 34.3C597.4 35.6 597.5 35.7 597.6 39.6C597.6 43.7 599.8 47.7 603.9 51.4L606.1 53.4L591.9 60.2C561.6 74.7 551.7 83.5 540.9 105.4C533.1 121.3 526.4 131.4 523.4 131.8C522.0 132.0 518.9 129.5 512.9 123.3ZM176.5 128.8C161.2 127.4 161.5 128.0 161.5 100.5C161.6 76.8 162.6 72.6 176.5 37.3C183.9 18.6 184.7 17.1 187.0 17.0C188.4 17.0 190.9 16.6 192.6 16.1L195.7 15.2L206.4 38.0C220.0 67.3 226.3 88.9 227.6 111.5C228.3 123.1 227.4 124.3 217.0 126.4C203.5 129.1 189.5 129.9 176.5 128.8ZM879.0 122.0C833.2 109.3 783.3 59.2 764.6 7.2L762.0 0.0L818.5 0.0L874.9 0.0L874.4 4.8C873.3 13.8 878.0 19.0 887.2 19.0L892.0 19.0L892.0 71.5L892.0 124.0L888.8 123.9C887.0 123.9 882.6 123.0 879.0 122.0ZM105.8 111.1C92.6 102.2 81.2 91.5 73.1 80.3C68.6 74.2 71.7 74.8 76.7 81.1C85.8 92.6 99.4 104.2 111.8 111.3C115.7 113.4 116.8 114.5 115.8 115.1C113.8 116.4 113.7 116.4 105.8 111.1ZM109.3 105.6C97.0 96.3 86.1 85.7 80.6 77.6C75.4 69.8 77.5 65.3 93.9 49.0C110.1 32.8 127.9 21.6 154.7 10.5L164.9 6.3L167.2 8.7C168.5 10.1 171.6 12.3 174.3 13.6L179.0 16.0L176.9 20.3C175.7 22.6 169.4 36.7 162.9 51.7C148.9 84.2 142.9 92.9 125.4 106.1C118.9 111.1 116.6 111.0 109.3 105.6ZM272.5 105.8C289.5 93.4 305.7 70.1 310.6 51.0C312.6 43.3 313.1 42.9 314.9 46.3C316.0 48.3 315.7 50.1 312.9 58.4C305.6 80.6 283.7 108.0 273.5 108.0L269.5 107.9L272.5 105.8ZM259.0 98.2C245.9 90.6 229.6 71.4 221.9 54.4C220.1 50.6 215.2 39.5 210.9 29.7L203.2 11.9L206.7 7.1L210.2 2.4L240.4 9.7C281.1 19.5 287.6 22.1 300.5 34.2C309.5 42.6 309.9 43.8 306.0 53.9C300.1 69.2 287.4 87.3 275.7 97.1C268.7 103.0 267.3 103.1 259.0 98.2ZM751.3 58.9C738.7 53.1 730.3 51.5 712.0 51.6C698.4 51.7 694.3 52.1 688.5 53.8L681.5 55.9L679.0 53.5C677.6 52.3 673.9 49.4 670.8 47.3L665.1 43.3L668.4 38.4C674.3 29.7 681.9 22.2 691.2 16.0L700.1 10.0L703.3 11.6C720.2 20.3 750.4 47.2 758.4 60.8C759.4 62.5 758.4 62.2 751.3 58.9ZM654.7 38.4C649.0 35.5 635.0 31.3 628.1 30.4C622.9 29.7 622.0 28.4 622.0 21.0C622.0 18.5 619.0 5.5 617.5 1.8C616.8 0.1 618.7 0.0 648.6 0.0L680.5 0.1L688.4 3.8L696.3 7.5L689.5 11.5C680.9 16.5 669.7 27.0 664.5 34.9C662.3 38.2 660.3 40.9 660.0 40.9C659.7 40.8 657.3 39.7 654.7 38.4ZM749.5 36.4C739.5 27.6 725.7 18.6 704.5 7.1L691.5 -0.0L716.2 -0.0L741.0 0.0L741.6 2.8C743.3 10.8 745.7 17.5 750.1 27.4C756.5 41.8 756.5 42.6 749.5 36.4ZM400.0 38.0C370.9 33.9 343.8 20.8 328.7 3.3L325.8 0.0L329.9 0.0C333.4 -0.0 335.0 0.9 342.3 6.7C365.1 25.0 388.9 33.3 418.5 33.4C450.0 33.5 477.7 23.2 496.0 4.6C499.9 0.6 501.0 0.0 504.8 0.0C510.3 -0.0 510.2 0.6 502.8 7.6C487.6 22.0 469.5 31.3 447.4 36.0C436.1 38.4 410.7 39.5 400.0 38.0ZM591.0 30.4C547.0 18.0 507.1 16.9 494.7 27.8C491.8 30.4 491.6 28.3 494.4 24.0C498.4 18.0 508.3 8.4 515.2 3.9L521.3 -0.0L567.0 0.0L612.7 0.0L614.5 6.3C615.5 9.7 616.5 16.2 616.8 20.7L617.3 28.9L613.4 29.5C611.2 29.8 607.7 30.8 605.5 31.6C600.7 33.3 601.6 33.3 591.0 30.4ZM402.5 28.0C382.1 24.8 361.9 15.7 345.0 2.1L342.5 0.0L419.0 0.1L495.5 0.1L491.5 3.6C480.9 12.9 463.9 21.3 447.1 25.7C436.3 28.5 413.3 29.6 402.5 28.0ZM65.5 22.2C61.1 21.2 59.0 16.3 59.0 7.2L59.0 0.0L109.2 0.1L159.5 0.1L146.0 5.1C138.6 7.9 128.4 11.6 123.5 13.5C105.0 20.3 76.1 24.7 65.5 22.2ZM53.1 19.2C52.1 17.2 51.7 13.8 51.9 5.8C52.0 0.3 52.1 -0.0 54.5 -0.0C56.9 -0.0 57.0 0.2 56.3 4.2C55.8 6.6 55.5 11.3 55.5 14.8C55.5 21.1 54.8 22.4 53.1 19.2ZM271.0 7.9C266.9 7.5 257.6 5.6 250.5 3.7L237.5 0.2L274.8 0.1L312.0 0.0L312.0 2.4C312.0 5.8 310.4 6.7 301.7 7.9C293.0 9.1 282.4 9.1 271.0 7.9Z"/></svg></div>
 <header class="masthead">
   <div class="wrap">
     <a class="wordmark" href="#start">Common Ground<span>food and movement planner</span></a>
@@ -390,7 +411,7 @@ footer p{max-width:46rem}
     </div>
   </div>
 </header>
-<div class="notebar"><div class="wrap"><strong>Prototype for testing.</strong> A student design concept for a future community in 2035, shared with our group and tutors for feedback. The activity and food guidance is today’s UK public guidance. Not an NHS service and not medical advice.</div></div>
+<div class="notebar"><div class="wrap"><strong>Student prototype for testing.</strong> Uses today’s UK guidance. Not medical advice.</div></div>
 
 <main id="main" tabindex="-1">
   <div class="wrap">
@@ -398,8 +419,7 @@ footer p{max-width:46rem}
 
     <!-- ===== Welcome ===== -->
     <section id="view-start" data-view="start" aria-labelledby="startTitle" class="welcome">
-      <div class="crown" aria-hidden="true"><svg class="orn-top" viewBox="0 0 892 196" preserveAspectRatio="xMidYMin meet" aria-hidden="true" focusable="false"><clipPath id="clipTop"><path d="M0 0H892V132H846V196H46V162H0Z"/></clipPath><path clip-path="url(#clipTop)" fill="currentColor" fill-rule="evenodd" d="M0.0 192.1L0.0 188.3L6.8 187.7C10.5 187.4 15.4 186.4 17.8 185.6L22.0 184.1L22.0 190.0L22.0 196.0L11.0 196.0L0.0 196.0L0.0 192.1ZM27.0 189.0C27.0 182.5 27.2 181.9 29.5 180.8C32.8 179.3 32.7 179.2 33.5 188.2L34.2 196.0L30.6 196.0L27.0 196.0L27.0 189.0ZM853.2 172.2C852.1 150.9 851.6 135.0 851.9 132.6C852.0 132.1 852.7 132.3 853.5 133.0C854.3 133.7 855.0 133.9 855.0 133.6C855.0 133.2 855.6 133.5 856.3 134.2C858.1 136.0 857.4 196.0 855.6 196.0C854.7 196.0 854.0 189.3 853.2 172.2ZM863.0 166.9C863.0 139.6 863.1 137.8 864.8 138.5C871.5 141.1 882.2 144.1 886.7 144.6L892.0 145.3L892.0 170.6L892.0 196.0L877.5 196.0L863.0 196.0L863.0 166.9ZM-0.0 183.2C-0.0 181.7 2.1 180.6 9.4 178.2C42.2 167.4 75.7 141.7 87.0 118.6C89.8 112.9 90.5 112.2 92.1 113.1C94.5 114.3 94.4 115.4 92.0 120.7C81.2 144.5 47.6 170.2 12.1 181.9C1.1 185.5 0.0 185.6 -0.0 183.2ZM644.5 184.3C638.9 183.8 635.0 181.0 635.0 177.5C635.0 176.3 637.5 168.5 640.5 160.3C643.5 152.0 646.8 141.9 647.9 137.9C650.4 128.8 654.0 96.5 654.0 83.5L654.0 73.9L662.2 74.5C668.1 74.9 671.8 74.7 675.0 73.7L679.5 72.3L691.0 78.1C720.5 92.8 740.7 109.2 747.2 123.6C749.9 129.6 750.8 144.7 749.0 153.3C747.4 161.4 744.7 164.0 730.7 170.9C707.3 182.5 678.9 186.9 644.5 184.3ZM602.8 176.0C588.8 171.9 580.1 168.5 566.5 161.8C548.9 153.1 545.2 150.5 544.0 146.2C539.2 129.1 540.7 115.8 549.2 99.8C556.4 86.3 574.5 72.7 600.4 61.5L610.2 57.2L617.4 61.0C625.4 65.3 635.0 69.1 642.6 70.9L647.7 72.1L648.4 78.8C651.6 113.2 638.6 161.7 622.3 176.0C618.1 179.8 615.5 179.8 602.8 176.0ZM0.0 86.5L0.0 0.0L21.2 0.0L42.5 0.0L42.6 12.3C43.0 40.8 59.7 81.4 80.3 103.6C83.4 107.0 86.0 110.2 86.0 110.8C86.0 116.1 60.8 141.9 46.0 151.8C32.8 160.7 6.2 173.0 0.4 173.0C0.2 173.0 0.0 134.1 0.0 86.5ZM758.1 143.6C757.5 142.9 756.5 139.7 755.9 136.4C754.7 130.0 751.5 120.9 749.1 117.0C741.7 105.0 721.1 89.3 696.3 76.7C683.7 70.3 683.1 69.8 684.0 67.6C684.5 66.3 684.7 65.0 684.6 64.9C684.4 64.7 684.0 63.3 683.7 61.9C683.0 59.3 683.2 59.2 690.8 57.7C714.4 52.9 734.5 55.7 755.5 66.8C764.2 71.4 764.6 71.8 767.7 78.0C777.3 97.3 776.6 123.7 766.1 140.2C763.0 145.1 760.3 146.3 758.1 143.6ZM170.1 135.0C164.2 134.2 159.8 131.9 161.2 130.5C161.5 130.2 165.8 130.4 170.6 131.1C182.4 132.6 207.8 131.7 219.2 129.2C224.1 128.2 228.0 127.7 228.0 128.0C228.0 130.2 224.6 132.4 219.0 133.6C211.2 135.4 179.2 136.3 170.1 135.0ZM881.9 134.5C827.6 123.7 772.2 72.3 753.1 15.2C748.4 0.8 748.3 0.0 751.8 0.0C754.7 0.0 755.0 0.4 757.1 6.8C776.0 64.5 839.3 125.2 884.2 128.7L892.0 129.3L892.0 132.6C892.0 136.5 891.9 136.5 881.9 134.5ZM512.9 123.3C493.2 102.9 483.6 81.9 483.6 59.5C483.6 46.5 485.2 42.3 492.8 35.2C502.1 26.7 508.3 24.9 527.0 24.9C545.7 25.0 570.2 28.5 592.5 34.3C597.4 35.6 597.5 35.7 597.6 39.6C597.6 43.7 599.8 47.7 603.9 51.4L606.1 53.4L591.9 60.2C561.6 74.7 551.7 83.5 540.9 105.4C533.1 121.3 526.4 131.4 523.4 131.8C522.0 132.0 518.9 129.5 512.9 123.3ZM176.5 128.8C161.2 127.4 161.5 128.0 161.5 100.5C161.6 76.8 162.6 72.6 176.5 37.3C183.9 18.6 184.7 17.1 187.0 17.0C188.4 17.0 190.9 16.6 192.6 16.1L195.7 15.2L206.4 38.0C220.0 67.3 226.3 88.9 227.6 111.5C228.3 123.1 227.4 124.3 217.0 126.4C203.5 129.1 189.5 129.9 176.5 128.8ZM879.0 122.0C833.2 109.3 783.3 59.2 764.6 7.2L762.0 0.0L818.5 0.0L874.9 0.0L874.4 4.8C873.3 13.8 878.0 19.0 887.2 19.0L892.0 19.0L892.0 71.5L892.0 124.0L888.8 123.9C887.0 123.9 882.6 123.0 879.0 122.0ZM105.8 111.1C92.6 102.2 81.2 91.5 73.1 80.3C68.6 74.2 71.7 74.8 76.7 81.1C85.8 92.6 99.4 104.2 111.8 111.3C115.7 113.4 116.8 114.5 115.8 115.1C113.8 116.4 113.7 116.4 105.8 111.1ZM109.3 105.6C97.0 96.3 86.1 85.7 80.6 77.6C75.4 69.8 77.5 65.3 93.9 49.0C110.1 32.8 127.9 21.6 154.7 10.5L164.9 6.3L167.2 8.7C168.5 10.1 171.6 12.3 174.3 13.6L179.0 16.0L176.9 20.3C175.7 22.6 169.4 36.7 162.9 51.7C148.9 84.2 142.9 92.9 125.4 106.1C118.9 111.1 116.6 111.0 109.3 105.6ZM272.5 105.8C289.5 93.4 305.7 70.1 310.6 51.0C312.6 43.3 313.1 42.9 314.9 46.3C316.0 48.3 315.7 50.1 312.9 58.4C305.6 80.6 283.7 108.0 273.5 108.0L269.5 107.9L272.5 105.8ZM259.0 98.2C245.9 90.6 229.6 71.4 221.9 54.4C220.1 50.6 215.2 39.5 210.9 29.7L203.2 11.9L206.7 7.1L210.2 2.4L240.4 9.7C281.1 19.5 287.6 22.1 300.5 34.2C309.5 42.6 309.9 43.8 306.0 53.9C300.1 69.2 287.4 87.3 275.7 97.1C268.7 103.0 267.3 103.1 259.0 98.2ZM751.3 58.9C738.7 53.1 730.3 51.5 712.0 51.6C698.4 51.7 694.3 52.1 688.5 53.8L681.5 55.9L679.0 53.5C677.6 52.3 673.9 49.4 670.8 47.3L665.1 43.3L668.4 38.4C674.3 29.7 681.9 22.2 691.2 16.0L700.1 10.0L703.3 11.6C720.2 20.3 750.4 47.2 758.4 60.8C759.4 62.5 758.4 62.2 751.3 58.9ZM654.7 38.4C649.0 35.5 635.0 31.3 628.1 30.4C622.9 29.7 622.0 28.4 622.0 21.0C622.0 18.5 619.0 5.5 617.5 1.8C616.8 0.1 618.7 0.0 648.6 0.0L680.5 0.1L688.4 3.8L696.3 7.5L689.5 11.5C680.9 16.5 669.7 27.0 664.5 34.9C662.3 38.2 660.3 40.9 660.0 40.9C659.7 40.8 657.3 39.7 654.7 38.4ZM749.5 36.4C739.5 27.6 725.7 18.6 704.5 7.1L691.5 -0.0L716.2 -0.0L741.0 0.0L741.6 2.8C743.3 10.8 745.7 17.5 750.1 27.4C756.5 41.8 756.5 42.6 749.5 36.4ZM400.0 38.0C370.9 33.9 343.8 20.8 328.7 3.3L325.8 0.0L329.9 0.0C333.4 -0.0 335.0 0.9 342.3 6.7C365.1 25.0 388.9 33.3 418.5 33.4C450.0 33.5 477.7 23.2 496.0 4.6C499.9 0.6 501.0 0.0 504.8 0.0C510.3 -0.0 510.2 0.6 502.8 7.6C487.6 22.0 469.5 31.3 447.4 36.0C436.1 38.4 410.7 39.5 400.0 38.0ZM591.0 30.4C547.0 18.0 507.1 16.9 494.7 27.8C491.8 30.4 491.6 28.3 494.4 24.0C498.4 18.0 508.3 8.4 515.2 3.9L521.3 -0.0L567.0 0.0L612.7 0.0L614.5 6.3C615.5 9.7 616.5 16.2 616.8 20.7L617.3 28.9L613.4 29.5C611.2 29.8 607.7 30.8 605.5 31.6C600.7 33.3 601.6 33.3 591.0 30.4ZM402.5 28.0C382.1 24.8 361.9 15.7 345.0 2.1L342.5 0.0L419.0 0.1L495.5 0.1L491.5 3.6C480.9 12.9 463.9 21.3 447.1 25.7C436.3 28.5 413.3 29.6 402.5 28.0ZM65.5 22.2C61.1 21.2 59.0 16.3 59.0 7.2L59.0 0.0L109.2 0.1L159.5 0.1L146.0 5.1C138.6 7.9 128.4 11.6 123.5 13.5C105.0 20.3 76.1 24.7 65.5 22.2ZM53.1 19.2C52.1 17.2 51.7 13.8 51.9 5.8C52.0 0.3 52.1 -0.0 54.5 -0.0C56.9 -0.0 57.0 0.2 56.3 4.2C55.8 6.6 55.5 11.3 55.5 14.8C55.5 21.1 54.8 22.4 53.1 19.2ZM271.0 7.9C266.9 7.5 257.6 5.6 250.5 3.7L237.5 0.2L274.8 0.1L312.0 0.0L312.0 2.4C312.0 5.8 310.4 6.7 301.7 7.9C293.0 9.1 282.4 9.1 271.0 7.9Z"/></svg></div>
-      <div class="meadow">
+      <div class="meadow bleed pat-sage">
         <div class="hero">
           <div>
             <p class="hero-meta">For people aged 60 and over</p>
@@ -421,10 +441,13 @@ footer p{max-width:46rem}
           </div>
         </div>
         <div class="start-row"><button type="button" class="btn start" data-go="about-you"><span class="flower" aria-hidden="true"></span>Start planning</button></div>
+        <div class="examples-card">
         <h2 class="ex-title">Or look at an example first</h2>
         <p class="ex-hint">These people are made up. Pick one to see a finished plan.</p>
         <div id="sampleList" class="examples"></div>
+        </div>
       </div>
+      <div class="how-band bleed pat-cream">
       <div class="howcard">
         <div class="howcard-inner">
           <h2>How it works</h2>
@@ -436,6 +459,7 @@ footer p{max-width:46rem}
           </ul>
           <button type="button" class="btn" data-go="about-you">Start planning</button>
         </div>
+      </div>
       </div>
     </section>
 
@@ -618,6 +642,7 @@ footer p{max-width:46rem}
     <!-- ===== Plan ===== -->
     <section data-view="plan" hidden aria-labelledby="planTitle" class="plan-top">
       <div class="print-only"><p><strong>Common Ground: food and movement planner (prototype).</strong> Educational ideas based on UK public guidance. Not medical advice. Printed <span id="printDate"></span>.</p></div>
+      <div class="plan-band bleed pat-sage">
       <div class="sign">
         <p class="sign-meta" id="planMeta">Your plan</p>
         <h1 id="planTitle" tabindex="-1">Your week</h1>
@@ -628,6 +653,7 @@ footer p{max-width:46rem}
         <button type="button" class="btn secondary" id="copyBtn">Copy the plan as text</button>
         <button type="button" class="btn secondary" id="editBtn">Change my answers</button>
         <button type="button" class="btn secondary" id="restartBtn">Start again</button>
+      </div>
       </div>
       <p class="small no-print">Use “Print or save as PDF” and choose “Save as PDF” as the printer to keep a copy.</p>
       <div class="confirm-panel" id="restartPanel" hidden>
@@ -661,7 +687,7 @@ footer p{max-width:46rem}
     </section>
     <p class="small">Artwork and colours: the Common Ground group. Typeface: Atkinson Hyperlegible Next, SIL Open Font License 1.1. Guidance links checked 21 November 2026. <a href="https://github.com/Echo-YZ/common-ground-planner">Source code</a>.</p>
   </div>
-  <div class="leaves" aria-hidden="true"><svg class="orn-bottom" viewBox="0 0 892 98" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false"><clipPath id="clipBottom"><path d="M0 28H48V0H844V28H892V98H0Z"/></clipPath><path clip-path="url(#clipBottom)" fill="currentColor" fill-rule="evenodd" d="M0.0 71.0L0.0 43.9L3.8 44.6C25.6 48.3 59.0 56.7 80.2 63.6C101.6 70.6 148.2 89.6 161.0 96.6C163.1 97.7 151.2 97.9 81.8 98.0L0.0 98.0L0.0 71.0ZM158.5 89.8C110.8 65.7 63.5 48.5 18.0 38.6C9.5 36.7 3.2 35.0 4.0 34.6C13.0 31.2 50.0 25.7 74.5 24.2C104.3 22.4 139.5 24.9 178.6 31.5C210.8 37.0 219.2 39.2 226.4 44.4C236.6 51.8 266.4 79.0 280.5 93.8L284.4 98.0L229.5 97.9L174.5 97.9L158.5 89.8ZM283.3 86.0C269.8 72.9 250.9 56.3 241.3 49.1C237.8 46.6 235.4 44.4 235.8 44.2C237.2 43.8 265.8 52.3 284.0 58.5C312.1 68.2 344.8 81.8 366.5 92.8L376.5 97.9L336.0 97.9L295.5 97.9L283.3 86.0ZM379.5 89.6C333.7 66.1 274.6 44.2 227.0 33.1C222.3 32.0 215.3 29.7 211.5 27.9C207.7 26.2 198.0 22.3 190.0 19.3C173.1 13.0 174.2 13.0 205.5 18.6C286.6 33.3 357.9 60.0 404.9 93.4L411.4 98.0L403.4 97.9C395.5 97.8 395.5 97.8 379.5 89.6ZM498.5 94.5C522.8 73.6 595.3 46.3 663.2 32.4C680.0 29.0 726.0 21.7 726.0 22.5C726.0 22.6 721.6 25.2 716.2 28.3C706.8 33.6 706.1 33.8 692.0 36.0C621.4 46.5 560.4 67.3 527.3 92.1L519.5 98.0L507.0 98.0L494.5 97.9L498.5 94.5ZM529.0 97.6C529.0 96.7 544.2 87.8 554.8 82.6C589.1 65.4 634.4 52.1 687.5 43.5C692.3 42.7 692.7 42.3 677.7 53.5C664.4 63.4 644.9 80.3 634.5 90.9L627.6 98.0L578.3 98.0C551.2 98.0 529.0 97.8 529.0 97.6ZM646.0 90.4C669.1 67.0 702.1 42.3 714.1 39.6C740.1 33.5 802.8 28.9 829.8 31.0C855.2 32.9 873.2 34.9 881.0 36.7L888.5 38.4L880.7 39.7C854.5 44.1 809.9 68.9 783.8 93.6L779.1 98.0L708.8 98.0L638.6 98.0L646.0 90.4ZM791.0 97.6C791.0 96.5 812.6 79.9 822.5 73.4C845.8 58.2 880.4 42.0 889.7 42.0L892.0 42.0L892.0 70.0L892.0 98.0L841.5 98.0C813.7 98.0 791.0 97.8 791.0 97.6ZM883.5 28.0C879.1 26.9 872.0 25.6 867.8 24.9L860.0 23.8L860.0 11.9L860.0 0.0L876.0 0.0L892.0 0.0L892.0 15.0C892.0 23.2 891.9 30.0 891.8 29.9C891.6 29.9 887.9 29.0 883.5 28.0ZM0.0 14.5L0.0 0.0L17.0 0.0L34.0 0.0L34.0 10.9L34.0 21.8L29.4 22.5C26.9 22.8 19.5 24.5 12.9 26.1C6.3 27.7 0.7 29.0 0.4 29.0C0.2 29.0 0.0 22.5 0.0 14.5ZM848.5 22.2C847.9 21.8 847.6 17.1 847.8 10.8L848.1 0.0L851.1 0.0L854.0 0.0L854.0 9.9C854.0 15.4 853.7 20.5 853.4 21.4C852.8 23.1 850.2 23.5 848.5 22.2ZM41.0 10.0C41.0 0.7 41.1 0.0 43.0 0.0C44.9 0.0 45.0 0.7 45.0 10.0C45.0 19.3 44.9 20.0 43.0 20.0C41.1 20.0 41.0 19.3 41.0 10.0Z"/></svg></div>
+  <div class="leaves" aria-hidden="true"><svg class="orn-bottom" viewBox="0 0 892 98" preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false"><clipPath id="clipBottom"><path d="M0 28H48V0H844V28H892V98H0Z"/></clipPath><path clip-path="url(#clipBottom)" fill="currentColor" fill-rule="evenodd" d="M0.0 71.0L0.0 43.9L3.8 44.6C25.6 48.3 59.0 56.7 80.2 63.6C101.6 70.6 148.2 89.6 161.0 96.6C163.1 97.7 151.2 97.9 81.8 98.0L0.0 98.0L0.0 71.0ZM158.5 89.8C110.8 65.7 63.5 48.5 18.0 38.6C9.5 36.7 3.2 35.0 4.0 34.6C13.0 31.2 50.0 25.7 74.5 24.2C104.3 22.4 139.5 24.9 178.6 31.5C210.8 37.0 219.2 39.2 226.4 44.4C236.6 51.8 266.4 79.0 280.5 93.8L284.4 98.0L229.5 97.9L174.5 97.9L158.5 89.8ZM283.3 86.0C269.8 72.9 250.9 56.3 241.3 49.1C237.8 46.6 235.4 44.4 235.8 44.2C237.2 43.8 265.8 52.3 284.0 58.5C312.1 68.2 344.8 81.8 366.5 92.8L376.5 97.9L336.0 97.9L295.5 97.9L283.3 86.0ZM379.5 89.6C333.7 66.1 274.6 44.2 227.0 33.1C222.3 32.0 215.3 29.7 211.5 27.9C207.7 26.2 198.0 22.3 190.0 19.3C173.1 13.0 174.2 13.0 205.5 18.6C286.6 33.3 357.9 60.0 404.9 93.4L411.4 98.0L403.4 97.9C395.5 97.8 395.5 97.8 379.5 89.6ZM498.5 94.5C522.8 73.6 595.3 46.3 663.2 32.4C680.0 29.0 726.0 21.7 726.0 22.5C726.0 22.6 721.6 25.2 716.2 28.3C706.8 33.6 706.1 33.8 692.0 36.0C621.4 46.5 560.4 67.3 527.3 92.1L519.5 98.0L507.0 98.0L494.5 97.9L498.5 94.5ZM529.0 97.6C529.0 96.7 544.2 87.8 554.8 82.6C589.1 65.4 634.4 52.1 687.5 43.5C692.3 42.7 692.7 42.3 677.7 53.5C664.4 63.4 644.9 80.3 634.5 90.9L627.6 98.0L578.3 98.0C551.2 98.0 529.0 97.8 529.0 97.6ZM646.0 90.4C669.1 67.0 702.1 42.3 714.1 39.6C740.1 33.5 802.8 28.9 829.8 31.0C855.2 32.9 873.2 34.9 881.0 36.7L888.5 38.4L880.7 39.7C854.5 44.1 809.9 68.9 783.8 93.6L779.1 98.0L708.8 98.0L638.6 98.0L646.0 90.4ZM791.0 97.6C791.0 96.5 812.6 79.9 822.5 73.4C845.8 58.2 880.4 42.0 889.7 42.0L892.0 42.0L892.0 70.0L892.0 98.0L841.5 98.0C813.7 98.0 791.0 97.8 791.0 97.6ZM883.5 28.0C879.1 26.9 872.0 25.6 867.8 24.9L860.0 23.8L860.0 11.9L860.0 0.0L876.0 0.0L892.0 0.0L892.0 15.0C892.0 23.2 891.9 30.0 891.8 29.9C891.6 29.9 887.9 29.0 883.5 28.0ZM0.0 14.5L0.0 0.0L17.0 0.0L34.0 0.0L34.0 10.9L34.0 21.8L29.4 22.5C26.9 22.8 19.5 24.5 12.9 26.1C6.3 27.7 0.7 29.0 0.4 29.0C0.2 29.0 0.0 22.5 0.0 14.5ZM848.5 22.2C847.9 21.8 847.6 17.1 847.8 10.8L848.1 0.0L851.1 0.0L854.0 0.0L854.0 9.9C854.0 15.4 853.7 20.5 853.4 21.4C852.8 23.1 850.2 23.5 848.5 22.2ZM41.0 10.0C41.0 0.7 41.1 0.0 43.0 0.0C44.9 0.0 45.0 0.7 45.0 10.0C45.0 19.3 44.9 20.0 43.0 20.0C41.1 20.0 41.0 19.3 41.0 10.0Z"/></svg></div>
 </footer>
 
 <script>
